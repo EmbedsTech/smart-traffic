@@ -1,17 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vehicle Verification</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+  }
+
+  h2 {
+    color: #333;
+    margin-bottom: 25px;
+  }
+
+  .status {
+    font-weight: 600;
+  }
+
+  .valid {
+    color: green;
+  }
+
+  .expired {
+    color: red;
+  }
+
+  .field {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+
+  .field span {
+    font-weight: 500;
+    color: #555;
+  }
+
+  #result p {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+</style>
 </head>
 
 <body>
-
-<h2>Vehicle Verification</h2>
-
-<div id="result">Loading...</div>
+  <div class="container">
+    <h2>Vehicle Verification</h2>
+    <div id="result">Loading...</div>
+  </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -32,44 +89,37 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 async function loadVehicle() {
+  const docRef = doc(db, "vehicles", id);
+  const docSnap = await getDoc(docRef);
 
-const docRef = doc(db, "vehicles", id);
-const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    let today = new Date().toISOString().split('T')[0];
 
-if(docSnap.exists()) {
+    let pucStatus = data.puc_expiry >= today ? 
+      '<span class="status valid">VALID ✅</span>' : 
+      '<span class="status expired">EXPIRED ❌</span>';
 
-const data = docSnap.data();
+    let licenseStatus = data.license_expiry >= today ? 
+      '<span class="status valid">VALID ✅</span>' : 
+      '<span class="status expired">EXPIRED ❌</span>';
 
-let today = new Date().toISOString().split('T')[0];
-
-let pucStatus = data.puc_expiry >= today ? "VALID ✅" : "EXPIRED ❌";
-let licenseStatus = data.license_expiry >= today ? "VALID ✅" : "EXPIRED ❌";
-
-document.getElementById("result").innerHTML = `
-Owner Name: ${data.name} <br><br>
-Vehicle Number: ${data.vehicle} <br><br>
-License Number: ${data.license} <br><br>
-
-License Expiry: ${data.license_expiry} <br>
-License Status: ${licenseStatus} <br><br>
-
-PUC Number: ${data.puc} <br>
-PUC Expiry: ${data.puc_expiry} <br>
-PUC Status: ${pucStatus}
-`;
-
-}
-else{
-
-document.getElementById("result").innerHTML = "Vehicle Not Found ❌";
-
-}
-
+    document.getElementById("result").innerHTML = `
+      <div class="field"><span>Owner Name:</span> ${data.name}</div>
+      <div class="field"><span>Vehicle Number:</span> ${data.vehicle}</div>
+      <div class="field"><span>License Number:</span> ${data.license}</div>
+      <div class="field"><span>License Expiry:</span> ${data.license_expiry}</div>
+      <div class="field"><span>License Status:</span> ${licenseStatus}</div>
+      <div class="field"><span>PUC Number:</span> ${data.puc}</div>
+      <div class="field"><span>PUC Expiry:</span> ${data.puc_expiry}</div>
+      <div class="field"><span>PUC Status:</span> ${pucStatus}</div>
+    `;
+  } else {
+    document.getElementById("result").innerHTML = '<span class="status expired">Vehicle Not Found ❌</span>';
+  }
 }
 
 loadVehicle();
-
 </script>
-
 </body>
 </html>
