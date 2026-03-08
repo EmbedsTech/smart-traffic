@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
-  /* Reset default styles */
   * {
     margin: 0;
     padding: 0;
@@ -31,13 +30,19 @@
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 450px;
+    max-width: 700px;
   }
 
   h2 {
     text-align: center;
     margin-bottom: 30px;
     color: #333;
+  }
+
+  form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 30px;
   }
 
   label {
@@ -51,7 +56,6 @@
   input[type="date"] {
     width: 100%;
     padding: 12px 15px;
-    margin-bottom: 20px;
     border: 1px solid #ccc;
     border-radius: 6px;
     transition: 0.3s;
@@ -64,6 +68,7 @@
   }
 
   button {
+    grid-column: span 2;
     width: 100%;
     padding: 12px;
     background: #007bff;
@@ -81,6 +86,7 @@
   }
 
   #msg {
+    grid-column: span 2;
     margin-top: 20px;
     text-align: center;
     font-weight: 500;
@@ -101,28 +107,50 @@
 <body>
   <div class="container">
     <h2>Vehicle Registration</h2>
+    <form id="vehicleForm">
+      <div>
+        <label for="name">Owner Name</label>
+        <input type="text" id="name" placeholder="Enter Owner Name">
+      </div>
 
-    <label for="name">Owner Name</label>
-    <input type="text" id="name" placeholder="Enter Owner Name">
+      <div>
+        <label for="vehicle">Vehicle Number</label>
+        <input type="text" id="vehicle" placeholder="Enter Vehicle Number">
+      </div>
 
-    <label for="vehicle">Vehicle Number</label>
-    <input type="text" id="vehicle" placeholder="Enter Vehicle Number">
+      <div>
+        <label for="license">License Number</label>
+        <input type="text" id="license" placeholder="Enter License Number">
+      </div>
 
-    <label for="license">License Number</label>
-    <input type="text" id="license" placeholder="Enter License Number">
+      <div>
+        <label for="license_expiry">License Expiry Date</label>
+        <input type="date" id="license_expiry">
+      </div>
 
-    <label for="license_expiry">License Expiry Date</label>
-    <input type="date" id="license_expiry">
+      <div>
+        <label for="puc">PUC Number</label>
+        <input type="text" id="puc" placeholder="Enter PUC Number">
+      </div>
 
-    <label for="puc">PUC Number</label>
-    <input type="text" id="puc" placeholder="Enter PUC Number">
+      <div>
+        <label for="puc_expiry">PUC Expiry Date</label>
+        <input type="date" id="puc_expiry">
+      </div>
 
-    <label for="puc_expiry">PUC Expiry Date</label>
-    <input type="date" id="puc_expiry">
+      <div>
+        <label for="insurance">Insurance ID</label>
+        <input type="text" id="insurance" placeholder="Enter Insurance ID">
+      </div>
 
-    <button onclick="registerVehicle()">Submit & Generate QR</button>
+      <div>
+        <label for="insurance_expiry">Insurance Expiry Date</label>
+        <input type="date" id="insurance_expiry">
+      </div>
 
-    <p id="msg"></p>
+      <button type="button" onclick="registerVehicle()">Submit & Generate QR</button>
+      <p id="msg"></p>
+    </form>
   </div>
 
 <script type="module">
@@ -149,19 +177,23 @@ window.registerVehicle = async function() {
   let license_expiry = document.getElementById("license_expiry").value;
   let puc = document.getElementById("puc").value;
   let puc_expiry = document.getElementById("puc_expiry").value;
+  let insurance = document.getElementById("insurance").value;
+  let insurance_expiry = document.getElementById("insurance_expiry").value;
 
-  if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry){
+  if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
     document.getElementById("msg").innerHTML = "<span style='color:red'>Please fill all fields!</span>";
     return;
   }
 
   const docRef = await addDoc(collection(db,"vehicles"),{
-    name:name,
-    vehicle:vehicle,
-    license:license,
-    license_expiry:license_expiry,
-    puc:puc,
-    puc_expiry:puc_expiry
+    name,
+    vehicle,
+    license,
+    license_expiry,
+    puc,
+    puc_expiry,
+    insurance,
+    insurance_expiry
   });
 
   document.getElementById("msg").innerHTML =
