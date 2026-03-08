@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Vehicle Registration</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Vehicle Registration</h2>
+
+<input type="text" id="name" placeholder="Owner Name"><br><br>
+<input type="text" id="vehicle" placeholder="Vehicle Number"><br><br>
+<input type="text" id="license" placeholder="License Number"><br><br>
+
+<button onclick="registerVehicle()">Submit & Generate QR</button>
+
+<p id="msg"></p>
 
 <script type="module">
 
-// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
   authDomain: "smart-traffic-30f86.firebaseapp.com",
@@ -21,45 +32,28 @@ const firebaseConfig = {
   measurementId: "G-91R0R3QR0F"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Register function
-window.registerVehicle = async function(){
+window.registerVehicle = async function() {
 
-const id = Math.random().toString(36).substring(2,10);
+let name = document.getElementById("name").value;
+let vehicle = document.getElementById("vehicle").value;
+let license = document.getElementById("license").value;
 
-const name = document.getElementById("name").value;
-const vehicle = document.getElementById("vehicle").value;
-const license = document.getElementById("license").value;
-
-await setDoc(doc(db, "vehicles", id), {
-
-name: name,
-vehicle: vehicle,
-license: license
-
+const docRef = await addDoc(collection(db,"vehicles"),{
+name:name,
+vehicle:vehicle,
+license:license
 });
 
-alert("Vehicle Registered!");
-
-window.location = "qr.html?id=" + id;
+document.getElementById("msg").innerHTML =
+"Registered Successfully<br><br>" +
+"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
 
 }
 
 </script>
 
-</head>
-
-<body>
-
-<h2>Vehicle Registration</h2>
-
-<input id="name" placeholder="Owner Name"><br><br>
-
-<input id="vehicle" placeholder="Vehicle Number"><br><br>
-
-<input id="license" placeholder="License Number"><br><br>
-
-<button onclick="registerVehicle()
+</body>
+</html>
