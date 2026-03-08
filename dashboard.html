@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h2>Registered Vehicles</h2>
+
+<div id="list"></div>
+
+<script>
+
+async function load(){
+
+const url="https://firestore.googleapis.com/v1/projects/smart-traffic/databases/(default)/documents/vehicles";
+
+const res=await fetch(url);
+
+const data=await res.json();
+
+let html="";
+
+data.documents.forEach(v=>{
+
+const f=v.fields;
+
+html+=`
+<hr>
+Owner: ${f.name.stringValue}<br>
+Vehicle: ${f.vehicle.stringValue}
+`;
+
+});
+
+document.getElementById("list").innerHTML=html;
+
+}
+
+load();
+
+</script>
+
+</body>
+</html>
