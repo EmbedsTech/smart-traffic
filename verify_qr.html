@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Vehicle Verification</title>
+</head>
+
+<body>
+
+<h2>Vehicle Verification</h2>
+
+<div id="result">Loading...</div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
   authDomain: "smart-traffic-30f86.firebaseapp.com",
@@ -20,65 +25,51 @@ const firebaseConfig = {
   measurementId: "G-91R0R3QR0F"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Get QR id from URL
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-async function verifyVehicle(){
+async function loadVehicle() {
 
-if(!id){
-
-document.getElementById("result").innerHTML="Invalid QR";
-return;
-
-}
-
-const docRef = doc(db,"vehicles",id);
+const docRef = doc(db, "vehicles", id);
 const docSnap = await getDoc(docRef);
 
-if(docSnap.exists()){
+if(docSnap.exists()) {
 
 const data = docSnap.data();
 
-document.getElementById("result").innerHTML=`
+let today = new Date().toISOString().split('T')[0];
 
-<h2 style="color:green;">Vehicle Verified</h2>
+let pucStatus = data.puc_expiry >= today ? "VALID ✅" : "EXPIRED ❌";
+let licenseStatus = data.license_expiry >= today ? "VALID ✅" : "EXPIRED ❌";
 
-Owner : ${data.name} <br><br>
-Vehicle : ${data.vehicle} <br><br>
-License : ${data.license}
+document.getElementById("result").innerHTML = `
+Owner Name: ${data.name} <br><br>
+Vehicle Number: ${data.vehicle} <br><br>
+License Number: ${data.license} <br><br>
 
+License Expiry: ${data.license_expiry} <br>
+License Status: ${licenseStatus} <br><br>
+
+PUC Number: ${data.puc} <br>
+PUC Expiry: ${data.puc_expiry} <br>
+PUC Status: ${pucStatus}
 `;
 
 }
 else{
 
-document.getElementById("result").innerHTML=`
-
-<h2 style="color:red;">Invalid QR Code</h2>
-
-`;
+document.getElementById("result").innerHTML = "Vehicle Not Found ❌";
 
 }
 
 }
 
-verifyVehicle();
+loadVehicle();
 
 </script>
 
-</head>
-
-<body>
-
-<h1>QR Verification</h1>
-
-<div id="result">Checking...</div>
-
 </body>
-
 </html>
