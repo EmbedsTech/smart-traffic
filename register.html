@@ -2,7 +2,6 @@
 <html>
 <head>
 <title>Vehicle Registration</title>
-<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -10,8 +9,18 @@
 <h2>Vehicle Registration</h2>
 
 <input type="text" id="name" placeholder="Owner Name"><br><br>
+
 <input type="text" id="vehicle" placeholder="Vehicle Number"><br><br>
+
 <input type="text" id="license" placeholder="License Number"><br><br>
+
+<input type="date" id="license_expiry"><br>
+<label>License Expiry Date</label><br><br>
+
+<input type="text" id="puc" placeholder="PUC Number"><br><br>
+
+<input type="date" id="puc_expiry"><br>
+<label>PUC Expiry Date</label><br><br>
 
 <button onclick="registerVehicle()">Submit & Generate QR</button>
 
@@ -40,11 +49,17 @@ window.registerVehicle = async function() {
 let name = document.getElementById("name").value;
 let vehicle = document.getElementById("vehicle").value;
 let license = document.getElementById("license").value;
+let license_expiry = document.getElementById("license_expiry").value;
+let puc = document.getElementById("puc").value;
+let puc_expiry = document.getElementById("puc_expiry").value;
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 name:name,
 vehicle:vehicle,
-license:license
+license:license,
+license_expiry:license_expiry,
+puc:puc,
+puc_expiry:puc_expiry
 });
 
 document.getElementById("msg").innerHTML =
