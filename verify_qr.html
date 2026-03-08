@@ -24,41 +24,51 @@
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     width: 100%;
-    max-width: 500px;
-    text-align: center;
+    max-width: 700px;
   }
 
   h2 {
+    text-align: center;
     color: #333;
     margin-bottom: 30px;
     font-size: 28px;
     letter-spacing: 0.5px;
   }
 
-  .field {
-    margin-bottom: 20px;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    padding: 10px 15px;
-    border-radius: 8px;
-    background: #f8f9fa;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 30px;
   }
 
-  .field span {
+  .field {
+    background: #f8f9fa;
+    padding: 15px 12px;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .field span.label {
     font-weight: 500;
     color: #555;
+    margin-bottom: 5px;
+  }
+
+  .field span.value {
+    font-weight: 500;
+    color: #333;
   }
 
   .badge {
-    padding: 5px 12px;
-    border-radius: 20px;
+    margin-top: 5px;
+    padding: 4px 10px;
+    border-radius: 15px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     color: #fff;
+    width: fit-content;
   }
 
   .valid {
@@ -110,23 +120,59 @@ async function loadVehicle() {
     const data = docSnap.data();
     let today = new Date().toISOString().split('T')[0];
 
-    let pucStatus = data.puc_expiry >= today ? 
+    const licenseStatus = data.license_expiry >= today ? 
       '<span class="badge valid">VALID ✅</span>' : 
       '<span class="badge expired">EXPIRED ❌</span>';
 
-    let licenseStatus = data.license_expiry >= today ? 
+    const pucStatus = data.puc_expiry >= today ? 
+      '<span class="badge valid">VALID ✅</span>' : 
+      '<span class="badge expired">EXPIRED ❌</span>';
+
+    const insuranceStatus = data.insurance_expiry >= today ? 
       '<span class="badge valid">VALID ✅</span>' : 
       '<span class="badge expired">EXPIRED ❌</span>';
 
     document.getElementById("result").innerHTML = `
-      <div class="field"><span>Owner Name:</span> <span>${data.name}</span></div>
-      <div class="field"><span>Vehicle Number:</span> <span>${data.vehicle}</span></div>
-      <div class="field"><span>License Number:</span> <span>${data.license}</span></div>
-      <div class="field"><span>License Expiry:</span> <span>${data.license_expiry}</span></div>
-      <div class="field"><span>License Status:</span> ${licenseStatus}</div>
-      <div class="field"><span>PUC Number:</span> <span>${data.puc}</span></div>
-      <div class="field"><span>PUC Expiry:</span> <span>${data.puc_expiry}</span></div>
-      <div class="field"><span>PUC Status:</span> ${pucStatus}</div>
+      <div class="grid">
+        <div class="field">
+          <span class="label">Owner Name:</span>
+          <span class="value">${data.name}</span>
+        </div>
+        <div class="field">
+          <span class="label">Vehicle Number:</span>
+          <span class="value">${data.vehicle}</span>
+        </div>
+
+        <div class="field">
+          <span class="label">License Number:</span>
+          <span class="value">${data.license}</span>
+          ${licenseStatus}
+        </div>
+        <div class="field">
+          <span class="label">License Expiry:</span>
+          <span class="value">${data.license_expiry}</span>
+        </div>
+
+        <div class="field">
+          <span class="label">PUC Number:</span>
+          <span class="value">${data.puc}</span>
+          ${pucStatus}
+        </div>
+        <div class="field">
+          <span class="label">PUC Expiry:</span>
+          <span class="value">${data.puc_expiry}</span>
+        </div>
+
+        <div class="field">
+          <span class="label">Insurance ID:</span>
+          <span class="value">${data.insurance}</span>
+          ${insuranceStatus}
+        </div>
+        <div class="field">
+          <span class="label">Insurance Expiry:</span>
+          <span class="value">${data.insurance_expiry}</span>
+        </div>
+      </div>
     `;
   } else {
     document.getElementById("result").innerHTML = '<span class="badge expired">Vehicle Not Found ❌</span>';
