@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Vehicle Verification</title>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
+  authDomain: "smart-traffic-30f86.firebaseapp.com",
+  projectId: "smart-traffic-30f86",
+  storageBucket: "smart-traffic-30f86.firebasestorage.app",
+  messagingSenderId: "16532299128",
+  appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d",
+  measurementId: "G-91R0R3QR0F"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Get QR id from URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+async function verifyVehicle(){
+
+if(!id){
+
+document.getElementById("result").innerHTML="Invalid QR";
+return;
+
+}
+
+const docRef = doc(db,"vehicles",id);
+const docSnap = await getDoc(docRef);
+
+if(docSnap.exists()){
+
+const data = docSnap.data();
+
+document.getElementById("result").innerHTML=`
+
+<h2 style="color:green;">Vehicle Verified</h2>
+
+Owner : ${data.name} <br><br>
+Vehicle : ${data.vehicle} <br><br>
+License : ${data.license}
+
+`;
+
+}
+else{
+
+document.getElementById("result").innerHTML=`
+
+<h2 style="color:red;">Invalid QR Code</h2>
+
+`;
+
+}
+
+}
+
+verifyVehicle();
+
+</script>
+
+</head>
+
+<body>
+
+<h1>QR Verification</h1>
+
+<div id="result">Checking...</div>
+
+</body>
+
+</html>
