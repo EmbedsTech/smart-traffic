@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Vehicle Registration</title>
+
+<script type="module">
+
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
+  authDomain: "smart-traffic-30f86.firebaseapp.com",
+  projectId: "smart-traffic-30f86",
+  storageBucket: "smart-traffic-30f86.firebasestorage.app",
+  messagingSenderId: "16532299128",
+  appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d",
+  measurementId: "G-91R0R3QR0F"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Register function
+window.registerVehicle = async function(){
+
+const id = Math.random().toString(36).substring(2,10);
+
+const name = document.getElementById("name").value;
+const vehicle = document.getElementById("vehicle").value;
+const license = document.getElementById("license").value;
+
+await setDoc(doc(db, "vehicles", id), {
+
+name: name,
+vehicle: vehicle,
+license: license
+
+});
+
+alert("Vehicle Registered!");
+
+window.location = "qr.html?id=" + id;
+
+}
+
+</script>
+
+</head>
+
+<body>
+
+<h2>Vehicle Registration</h2>
+
+<input id="name" placeholder="Owner Name"><br><br>
+
+<input id="vehicle" placeholder="Vehicle Number"><br><br>
+
+<input id="license" placeholder="License Number"><br><br>
+
+<button onclick="registerVehicle()
