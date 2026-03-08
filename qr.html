@@ -1,28 +1,23 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-<title>Vehicle QR</title>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
+<title>QR Code</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
 
 <h2>Vehicle QR Code</h2>
 
-<canvas id="qr"></canvas>
+<div id="qrcode"></div>
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
 
-const url =
-"https://EmbedsTech.github.io/smart_traffic/verify_qr.html?id=" + id;
-
-QRCode.toCanvas(document.getElementById("qr"), url);
+// QR मध्ये फक्त ID
+new QRCode(document.getElementById("qrcode"), id);
 
 </script>
 
