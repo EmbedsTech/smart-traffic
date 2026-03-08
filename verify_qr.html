@@ -11,7 +11,7 @@
 <style>
   body {
     font-family: 'Roboto', sans-serif;
-    background: #f4f6f8;
+    background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,34 +20,32 @@
 
   .container {
     background: #fff;
-    padding: 30px 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 35px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     text-align: center;
   }
 
   h2 {
     color: #333;
-    margin-bottom: 25px;
-  }
-
-  .status {
-    font-weight: 600;
-  }
-
-  .valid {
-    color: green;
-  }
-
-  .expired {
-    color: red;
+    margin-bottom: 30px;
+    font-size: 28px;
+    letter-spacing: 0.5px;
   }
 
   .field {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
   }
 
   .field span {
@@ -55,10 +53,26 @@
     color: #555;
   }
 
-  #result p {
-    margin: 10px 0;
-    font-size: 16px;
+  .badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
   }
+
+  .valid {
+    background-color: #28a745; /* green */
+  }
+
+  .expired {
+    background-color: #dc3545; /* red */
+  }
+
+  #result {
+    margin-top: 10px;
+  }
+
 </style>
 </head>
 
@@ -97,25 +111,25 @@ async function loadVehicle() {
     let today = new Date().toISOString().split('T')[0];
 
     let pucStatus = data.puc_expiry >= today ? 
-      '<span class="status valid">VALID ✅</span>' : 
-      '<span class="status expired">EXPIRED ❌</span>';
+      '<span class="badge valid">VALID ✅</span>' : 
+      '<span class="badge expired">EXPIRED ❌</span>';
 
     let licenseStatus = data.license_expiry >= today ? 
-      '<span class="status valid">VALID ✅</span>' : 
-      '<span class="status expired">EXPIRED ❌</span>';
+      '<span class="badge valid">VALID ✅</span>' : 
+      '<span class="badge expired">EXPIRED ❌</span>';
 
     document.getElementById("result").innerHTML = `
-      <div class="field"><span>Owner Name:</span> ${data.name}</div>
-      <div class="field"><span>Vehicle Number:</span> ${data.vehicle}</div>
-      <div class="field"><span>License Number:</span> ${data.license}</div>
-      <div class="field"><span>License Expiry:</span> ${data.license_expiry}</div>
+      <div class="field"><span>Owner Name:</span> <span>${data.name}</span></div>
+      <div class="field"><span>Vehicle Number:</span> <span>${data.vehicle}</span></div>
+      <div class="field"><span>License Number:</span> <span>${data.license}</span></div>
+      <div class="field"><span>License Expiry:</span> <span>${data.license_expiry}</span></div>
       <div class="field"><span>License Status:</span> ${licenseStatus}</div>
-      <div class="field"><span>PUC Number:</span> ${data.puc}</div>
-      <div class="field"><span>PUC Expiry:</span> ${data.puc_expiry}</div>
+      <div class="field"><span>PUC Number:</span> <span>${data.puc}</span></div>
+      <div class="field"><span>PUC Expiry:</span> <span>${data.puc_expiry}</span></div>
       <div class="field"><span>PUC Status:</span> ${pucStatus}</div>
     `;
   } else {
-    document.getElementById("result").innerHTML = '<span class="status expired">Vehicle Not Found ❌</span>';
+    document.getElementById("result").innerHTML = '<span class="badge expired">Vehicle Not Found ❌</span>';
   }
 }
 
