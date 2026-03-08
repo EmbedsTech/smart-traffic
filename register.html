@@ -1,3 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Registration</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* Reset default styles */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  body {
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 450px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+  }
+
+  label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  input[type="text"],
+  input[type="date"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: 0.3s;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  #msg {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  #msg a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  #msg a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Vehicle Registration</h2>
+
+    <label for="name">Owner Name</label>
+    <input type="text" id="name" placeholder="Enter Owner Name">
+
+    <label for="vehicle">Vehicle Number</label>
+    <input type="text" id="vehicle" placeholder="Enter Vehicle Number">
+
+    <label for="license">License Number</label>
+    <input type="text" id="license" placeholder="Enter License Number">
+
+    <label for="license_expiry">License Expiry Date</label>
+    <input type="date" id="license_expiry">
+
+    <label for="puc">PUC Number</label>
+    <input type="text" id="puc" placeholder="Enter PUC Number">
+
+    <label for="puc_expiry">PUC Expiry Date</label>
+    <input type="date" id="puc_expiry">
+
+    <button onclick="registerVehicle()">Submit & Generate QR</button>
+
+    <p id="msg"></p>
+  </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -16,25 +143,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.registerVehicle = async function() {
-
-  let name = document.getElementById("name").value.trim();
-  let vehicle = document.getElementById("vehicle").value.trim().toUpperCase();
-  let license = document.getElementById("license").value.trim();
+  let name = document.getElementById("name").value;
+  let vehicle = document.getElementById("vehicle").value;
+  let license = document.getElementById("license").value;
   let license_expiry = document.getElementById("license_expiry").value;
-  let puc = document.getElementById("puc").value.trim();
+  let puc = document.getElementById("puc").value;
   let puc_expiry = document.getElementById("puc_expiry").value;
-
-  // Vehicle number regex validation
-  const standardRegex = /^[A-Z]{2}\d{2}[A-Z]{1,2}\d{4}$/; // e.g., MH01AB2345
-  const bhRegex = /^BH\d{2}[A-Z]{2}\d{4}$/; // e.g., BH01AB2345
 
   if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry){
     document.getElementById("msg").innerHTML = "<span style='color:red'>Please fill all fields!</span>";
-    return;
-  }
-
-  if(!standardRegex.test(vehicle) && !bhRegex.test(vehicle)) {
-    document.getElementById("msg").innerHTML = "<span style='color:red'>Invalid Vehicle Number!<br>Format: Standard (MH01AB2345) or BH Series (BH01AB2345)</span>";
     return;
   }
 
@@ -48,7 +165,9 @@ window.registerVehicle = async function() {
   });
 
   document.getElementById("msg").innerHTML =
-    "Registered Successfully ✅<br><br>" +
+    "Registered Successfully<br><br>" +
     "<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
 }
 </script>
+</body>
+</html>
