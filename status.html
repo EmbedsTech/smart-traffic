@@ -97,8 +97,8 @@ document.body.style.background="#ff9c9c";
 
 }
 
-document.getElementById("veh").innerHTML=data.vehicle_no || "-";
-document.getElementById("owner").innerHTML=data.owner_name || "-";
+document.getElementById("veh").innerHTML=data.vehicle || "-";
+document.getElementById("owner").innerHTML=data.name || "-";
 document.getElementById("puc").innerHTML=data.puc_expiry || "-";
 document.getElementById("lic").innerHTML=data.license_expiry || "-";
 
@@ -113,3 +113,4 @@ setInterval(checkStatus,2000);
 </body>
 
 </html>
+
