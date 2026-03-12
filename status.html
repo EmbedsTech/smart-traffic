@@ -3,30 +3,38 @@
 
 <head>
 
-<title>Vehicle Verification</title>
+<title>Vehicle Verification System</title>
 
 <style>
 
 body{
 font-family:Arial;
 text-align:center;
-margin-top:50px;
+background:#f2f2f2;
 }
 
 #status{
 font-size:60px;
 font-weight:bold;
-margin-bottom:20px;
+margin:20px;
 }
 
 table{
 margin:auto;
 border-collapse:collapse;
+width:60%;
+font-size:20px;
+background:white;
 }
 
-td,th{
+th,td{
 border:1px solid black;
-padding:10px;
+padding:12px;
+text-align:center;
+}
+
+th{
+background:#ddd;
 }
 
 </style>
@@ -67,32 +75,34 @@ padding:10px;
 
 function checkStatus(){
 
-fetch("https://traffic-qr-verifier-2.onrender.com/result")
+fetch("https://traffic-api-pjz9.onrender.com/result")
 
 .then(res => res.json())
 
 .then(data =>{
 
+console.log(data);
+
 if(data.status=="VALID"){
 
 document.getElementById("status").innerHTML="VALID";
-document.body.style.background="lightgreen";
+document.body.style.background="#9cff9c";
 
 }
 
 else if(data.status=="INVALID"){
 
 document.getElementById("status").innerHTML="INVALID";
-document.body.style.background="salmon";
+document.body.style.background="#ff9c9c";
 
 }
 
-document.getElementById("veh").innerHTML=data.vehicle_no || "";
-document.getElementById("owner").innerHTML=data.owner_name || "";
-document.getElementById("puc").innerHTML=data.puc_expiry || "";
-document.getElementById("lic").innerHTML=data.license_expiry || "";
+document.getElementById("veh").innerHTML=data.vehicle_no || "-";
+document.getElementById("owner").innerHTML=data.owner_name || "-";
+document.getElementById("puc").innerHTML=data.puc_expiry || "-";
+document.getElementById("lic").innerHTML=data.license_expiry || "-";
 
-});
+})
 
 }
 
