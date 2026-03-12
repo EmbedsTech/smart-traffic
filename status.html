@@ -15,7 +15,7 @@ background:#f2f2f2;
 
 h1{
 font-family:Times New Roman;
-text-decoration:Italian;
+text-decoration:underline;
 font-size:40px;
 margin-bottom:20px;
 }
@@ -29,21 +29,20 @@ margin:20px;
 table{
 margin:auto;
 border-collapse:collapse;
-width:60%;
+width:70%;
 font-size:20px;
 background:white;
-border:3px solid black;
+border:4px solid black; /* outer bold border */
 }
 
 th,td{
-border:3px solid black;
+border:1px solid #999; /* inner light lines */
 padding:12px;
 text-align:center;
 }
 
 th{
 background:#ddd;
-font-size:22px;
 }
 
 </style>
@@ -61,26 +60,31 @@ font-size:22px;
 <tr>
 <th>Title</th>
 <th>Details</th>
+<th>Status</th>
 </tr>
 
 <tr>
 <th>Vehicle Number</th>
 <td id="veh"></td>
+<td>-</td>
 </tr>
 
 <tr>
 <th>Owner Name</th>
 <td id="owner"></td>
+<td>-</td>
 </tr>
 
 <tr>
 <th>PUC Expiry</th>
 <td id="puc"></td>
+<td id="puc_status"></td>
 </tr>
 
 <tr>
 <th>License Expiry</th>
 <td id="lic"></td>
+<td id="lic_status"></td>
 </tr>
 
 </table>
@@ -98,23 +102,23 @@ fetch("https://traffic-api-pjz9.onrender.com/result")
 console.log(data);
 
 if(data.status=="VALID"){
-
 document.getElementById("status").innerHTML="VALID";
 document.body.style.background="#9cff9c";
-
 }
-
-else if(data.status=="INVALID"){
-
+else{
 document.getElementById("status").innerHTML="INVALID";
 document.body.style.background="#ff9c9c";
-
 }
 
 document.getElementById("veh").innerHTML=data.vehicle || "-";
 document.getElementById("owner").innerHTML=data.name || "-";
 document.getElementById("puc").innerHTML=data.puc_expiry || "-";
 document.getElementById("lic").innerHTML=data.license_expiry || "-";
+
+/* simple status display */
+
+document.getElementById("puc_status").innerHTML=data.puc_status || "-";
+document.getElementById("lic_status").innerHTML=data.license_status || "-";
 
 })
 
