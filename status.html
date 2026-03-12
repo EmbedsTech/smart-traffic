@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Vehicle Verification System</title>
+<title>Smart Document Verification System</title>
 
 <style>
 
@@ -11,6 +11,13 @@ body{
 font-family:Arial;
 text-align:center;
 background:#f2f2f2;
+}
+
+h1{
+font-family:Algerian;
+text-decoration:underline;
+font-size:40px;
+margin-bottom:20px;
 }
 
 #status{
@@ -22,19 +29,21 @@ margin:20px;
 table{
 margin:auto;
 border-collapse:collapse;
-width:60%;
+width:70%;
 font-size:20px;
 background:white;
+border:3px solid black;
 }
 
 th,td{
-border:1px solid black;
-padding:12px;
+border:3px solid black;
+padding:14px;
 text-align:center;
 }
 
 th{
 background:#ddd;
+font-size:22px;
 }
 
 </style>
@@ -43,7 +52,7 @@ background:#ddd;
 
 <body>
 
-<h1>Vehicle Verification System</h1>
+<h1>Smart Document Verification System</h1>
 
 <div id="status">WAITING...</div>
 
@@ -51,22 +60,16 @@ background:#ddd;
 
 <tr>
 <th>Vehicle Number</th>
-<td id="veh"></td>
-</tr>
-
-<tr>
 <th>Owner Name</th>
-<td id="owner"></td>
-</tr>
-
-<tr>
 <th>PUC Expiry</th>
-<td id="puc"></td>
+<th>License Expiry</th>
 </tr>
 
 <tr>
-<th>License Expiry</th>
-<td id="lic"></td>
+<td id="veh">-</td>
+<td id="owner">-</td>
+<td id="puc">-</td>
+<td id="lic">-</td>
 </tr>
 
 </table>
@@ -113,4 +116,3 @@ setInterval(checkStatus,2000);
 </body>
 
 </html>
-
