@@ -28,7 +28,7 @@ min-height:100vh;
 
 .container{
 background:#fff;
-padding:40px 30px;
+padding:40px;
 border-radius:10px;
 box-shadow:0 8px 20px rgba(0,0,0,0.1);
 width:100%;
@@ -38,20 +38,12 @@ max-width:700px;
 h2{
 text-align:center;
 margin-bottom:30px;
-color:#333;
 }
 
 form{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:20px 30px;
-}
-
-label{
-font-size:14px;
-color:#555;
-margin-bottom:5px;
-display:block;
+gap:20px;
 }
 
 input{
@@ -65,10 +57,10 @@ button{
 grid-column:span 2;
 padding:12px;
 background:#007bff;
-color:#fff;
+color:white;
 border:none;
-font-size:16px;
 border-radius:6px;
+font-size:16px;
 cursor:pointer;
 }
 
@@ -79,7 +71,7 @@ background:#0056b3;
 #msg{
 grid-column:span 2;
 text-align:center;
-margin-top:15px;
+margin-top:10px;
 }
 
 </style>
@@ -94,60 +86,21 @@ margin-top:15px;
 
 <form>
 
-<div>
-<label>Owner Name</label>
-<input type="text" id="name">
-</div>
+<input type="text" id="name" placeholder="Owner Name">
 
-<div>
-<label>Vehicle Number</label>
-<input type="text" id="vehicle">
-</div>
+<input type="text" id="vehicle" placeholder="Vehicle Number">
 
-<div>
-<label>License Number</label>
-<input type="text" id="license">
-</div>
+<input type="text" id="license" placeholder="License Number">
 
-<div>
-<label>License Expiry</label>
 <input type="date" id="license_expiry">
-</div>
 
-<div>
-<label>Upload License Image</label>
-<input type="file" id="license_img">
-</div>
+<input type="text" id="puc" placeholder="PUC Number">
 
-<div>
-<label>PUC Number</label>
-<input type="text" id="puc">
-</div>
-
-<div>
-<label>PUC Expiry</label>
 <input type="date" id="puc_expiry">
-</div>
 
-<div>
-<label>Upload PUC Image</label>
-<input type="file" id="puc_img">
-</div>
+<input type="text" id="insurance" placeholder="Insurance Number">
 
-<div>
-<label>Insurance Number</label>
-<input type="text" id="insurance">
-</div>
-
-<div>
-<label>Insurance Expiry</label>
 <input type="date" id="insurance_expiry">
-</div>
-
-<div>
-<label>Upload Insurance Image</label>
-<input type="file" id="insurance_img">
-</div>
 
 <button type="button" onclick="registerVehicle()">Submit & Generate QR</button>
 
@@ -164,10 +117,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, addDoc }
 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import { getStorage, ref, uploadBytes, getDownloadURL }
-
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 
 const firebaseConfig = {
@@ -186,124 +135,50 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 };
 
-
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
-const storage = getStorage(app);
-
 
 window.registerVehicle = async function(){
 
 let name=document.getElementById("name").value;
-
 let vehicle=document.getElementById("vehicle").value;
 
 let license=document.getElementById("license").value;
-
 let license_expiry=document.getElementById("license_expiry").value;
 
-let license_img=document.getElementById("license_img").files[0];
-
 let puc=document.getElementById("puc").value;
-
 let puc_expiry=document.getElementById("puc_expiry").value;
 
-let puc_img=document.getElementById("puc_img").files[0];
-
 let insurance=document.getElementById("insurance").value;
-
 let insurance_expiry=document.getElementById("insurance_expiry").value;
-
-let insurance_img=document.getElementById("insurance_img").files[0];
-
 
 if(!name || !vehicle){
 
-document.getElementById("msg").innerHTML="Fill required fields";
-
+document.getElementById("msg").innerHTML="Enter required fields";
 return;
 
 }
 
-
-let licenseURL="";
-
-let pucURL="";
-
-let insuranceURL="";
-
-
-if(license_img){
-
-const licenseRef=ref(storage,"license/"+Date.now()+license_img.name);
-
-await uploadBytes(licenseRef,license_img);
-
-licenseURL=await getDownloadURL(licenseRef);
-
-}
-
-
-if(puc_img){
-
-const pucRef=ref(storage,"puc/"+Date.now()+puc_img.name);
-
-await uploadBytes(pucRef,puc_img);
-
-pucURL=await getDownloadURL(pucRef);
-
-}
-
-
-if(insurance_img){
-
-const insuranceRef=ref(storage,"insurance/"+Date.now()+insurance_img.name);
-
-await uploadBytes(insuranceRef,insurance_img);
-
-insuranceURL=await getDownloadURL(insuranceRef);
-
-}
-
-
-const docRef=await addDoc(collection(db,"vehicles"),{
+const docRef = await addDoc(collection(db,"vehicles"),{
 
 name,
-
 vehicle,
-
 license,
-
 license_expiry,
-
-license_image:licenseURL,
-
 puc,
-
 puc_expiry,
-
-puc_image:pucURL,
-
 insurance,
-
-insurance_expiry,
-
-insurance_image:insuranceURL
+insurance_expiry
 
 });
 
-
 document.getElementById("msg").innerHTML="Registered Successfully";
-
 
 setTimeout(()=>{
 
 window.location.href="qr.html?id="+docRef.id;
 
-},1500);
-
+},1000);
 
 }
 
