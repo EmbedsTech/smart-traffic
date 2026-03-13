@@ -19,7 +19,7 @@ text-decoration:underline;
 font-size:40px;
 margin-bottom:20px;
 }
-
+  
 #status{
 font-size:60px;
 font-weight:bold;
@@ -34,18 +34,17 @@ font-size:20px;
 background:white;
 border:3px solid black;
 }
-
+  
 th,td{
-border:1px solid #999;
+border:1px solid black;
 padding:12px;
 text-align:center;
-background:#f5f5f5;   /* faint gray box color */
 }
 
 th{
 font-weight:bold;
 }
-
+  
 </style>
 
 </head>
@@ -63,17 +62,20 @@ font-weight:bold;
 <th>Details</th>
 <th>Status</th>
 </tr>
+  
+<tr>
+<th>Owner Name</th>
+<td id="owner"></td>
+</tr>
 
 <tr>
 <th>Vehicle Number</th>
 <td id="veh"></td>
-<td>-</td>
 </tr>
 
 <tr>
-<th>Owner Name</th>
-<td id="owner"></td>
-<td>-</td>
+<th>PUC Number</th>
+<td id="puc_no"></td>
 </tr>
 
 <tr>
@@ -83,9 +85,19 @@ font-weight:bold;
 </tr>
 
 <tr>
+<th>License Number</th>
+<td id="lic_no"></td>
+</tr>
+
+<tr>
 <th>License Expiry</th>
 <td id="lic"></td>
 <td id="lic_status"></td>
+</tr>
+
+<tr>
+<th>Insurance Number</th>
+<td id="ins_no"></td>
 </tr>
 
 <tr>
@@ -98,34 +110,47 @@ font-weight:bold;
 
 <script>
 
+if(localStorage.getItem("auth")!="true"){
+
+window.location="login.html";
+
+}
+
 function checkStatus(){
 
 fetch("https://traffic-api-pjz9.onrender.com/result")
 
-.then(res => res.json())
+.then(res=>res.json())
 
-.then(data =>{
+.then(data=>{
 
 console.log(data);
-
+  
 if(data.status=="VALID"){
+
 document.getElementById("status").innerHTML="VALID";
 document.body.style.background="#9cff9c";
+
 }
-else{
+
+else if(data.status=="INVALID"){
+
 document.getElementById("status").innerHTML="INVALID";
 document.body.style.background="#ff9c9c";
+
 }
 
-document.getElementById("veh").innerHTML=data.vehicle || "-";
 document.getElementById("owner").innerHTML=data.name || "-";
-document.getElementById("puc").innerHTML=data.puc_expiry || "-";
-document.getElementById("lic").innerHTML=data.license_expiry || "-";
-document.getElementById("ins").innerHTML=data.insurance_expiry || "-";
+document.getElementById("veh").innerHTML=data.vehicle || "-";
 
-document.getElementById("puc_status").innerHTML=data.puc_status || "-";
-document.getElementById("lic_status").innerHTML=data.license_status || "-";
-document.getElementById("ins_status").innerHTML=data.insurance_status || "-";
+document.getElementById("puc_no").innerHTML=data.puc || "-";
+document.getElementById("puc_expiry").innerHTML=data.puc_expiry || "-";
+
+document.getElementById("lic_no").innerHTML=data.license || "-";
+document.getElementById("lic_expiry").innerHTML=data.license_expiry || "-";
+
+document.getElementById("ins_no").innerHTML=data.insurance || "-";
+document.getElementById("ins_expiry").innerHTML=data.insurance_expiry || "-";
 
 })
 
