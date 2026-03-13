@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Vehicle Registration</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -24,8 +28,8 @@ min-height:100vh;
 }
 
 .container{
-background:#fff;
-padding:40px 30px;
+background:white;
+padding:40px;
 border-radius:10px;
 box-shadow:0 8px 20px rgba(0,0,0,0.1);
 width:100%;
@@ -35,25 +39,21 @@ max-width:700px;
 h2{
 text-align:center;
 margin-bottom:30px;
-color:#333;
 }
 
 form{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:20px 30px;
+gap:20px;
 }
 
 label{
 font-size:14px;
-color:#555;
 margin-bottom:5px;
 display:block;
 }
 
-input[type="text"],
-input[type="date"],
-input[type="file"]{
+input{
 width:100%;
 padding:10px;
 border:1px solid #ccc;
@@ -64,7 +64,7 @@ button{
 grid-column:span 2;
 padding:12px;
 background:#007bff;
-color:#fff;
+color:white;
 border:none;
 font-size:16px;
 border-radius:6px;
@@ -79,8 +79,11 @@ background:#0056b3;
 grid-column:span 2;
 text-align:center;
 margin-top:15px;
+font-weight:bold;
 }
+
 </style>
+
 </head>
 
 <body>
@@ -89,7 +92,7 @@ margin-top:15px;
 
 <h2>Vehicle Registration</h2>
 
-<form>
+<form id="vehicleForm" onsubmit="event.preventDefault(); registerVehicle();">
 
 <div>
 <label>Owner Name</label>
@@ -146,7 +149,7 @@ margin-top:15px;
 <input type="file" id="insurance_img">
 </div>
 
-<button type="button" onclick="registerVehicle()">Submit & Generate QR</button>
+<button type="submit">Submit & Generate QR</button>
 
 <p id="msg"></p>
 
@@ -158,7 +161,6 @@ margin-top:15px;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -171,67 +173,47 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 window.registerVehicle = async function(){
 
-let name=document.getElementById("name").value;
-let vehicle=document.getElementById("vehicle").value;
-
-let license=document.getElementById("license").value;
+let name=document.getElementById("name").value.trim();
+let vehicle=document.getElementById("vehicle").value.trim();
+let license=document.getElementById("license").value.trim();
 let license_expiry=document.getElementById("license_expiry").value;
-let license_img=document.getElementById("license_img").files[0];
-
-let puc=document.getElementById("puc").value;
+let puc=document.getElementById("puc").value.trim();
 let puc_expiry=document.getElementById("puc_expiry").value;
-let puc_img=document.getElementById("puc_img").files[0];
-
-let insurance=document.getElementById("insurance").value;
+let insurance=document.getElementById("insurance").value.trim();
 let insurance_expiry=document.getElementById("insurance_expiry").value;
+
+let license_img=document.getElementById("license_img").files[0];
+let puc_img=document.getElementById("puc_img").files[0];
 let insurance_img=document.getElementById("insurance_img").files[0];
 
 if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
-document.getElementById("msg").innerHTML="Fill all fields";
+
+document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
 return;
+
 }
 
-/* Upload images */
-
-const licenseRef=ref(storage,"license/"+license_img.name);
-await uploadBytes(licenseRef,license_img);
-const licenseURL=await getDownloadURL(licenseRef);
-
-const pucRef=ref(storage,"puc/"+puc_img.name);
-await uploadBytes(pucRef,puc_img);
-const pucURL=await getDownloadURL(pucRef);
-
-const insuranceRef=ref(storage,"insurance/"+insurance_img.name);
-await uploadBytes(insuranceRef,insurance_img);
-const insuranceURL=await getDownloadURL(insuranceRef);
-
-/* Save data in firestore */
-
-const docRef=await addDoc(collection(db,"vehicles"),{
+const docRef = await addDoc(collection(db,"vehicles"),{
 
 name,
 vehicle,
-
 license,
 license_expiry,
-license_image:licenseURL,
-
 puc,
 puc_expiry,
-puc_image:pucURL,
-
 insurance,
 insurance_expiry,
-insurance_image:insuranceURL
+license_image: license_img ? license_img.name : "",
+puc_image: puc_img ? puc_img.name : "",
+insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
 document.getElementById("msg").innerHTML=
-"Registered Successfully <br><br>"+
+"Registered Successfully<br><br>"+
 "<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
 
 }
@@ -239,4 +221,5 @@ document.getElementById("msg").innerHTML=
 </script>
 
 </body>
+
 </html>
