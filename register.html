@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Vehicle Registration</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -51,9 +54,7 @@ margin-bottom:5px;
 display:block;
 }
 
-input[type="text"],
-input[type="date"],
-input[type="file"]{
+input{
 width:100%;
 padding:10px;
 border:1px solid #ccc;
@@ -80,6 +81,7 @@ grid-column:span 2;
 text-align:center;
 margin-top:15px;
 }
+
 </style>
 </head>
 
@@ -132,7 +134,7 @@ margin-top:15px;
 </div>
 
 <div>
-<label>Insurance ID</label>
+<label>Insurance Number</label>
 <input type="text" id="insurance">
 </div>
 
@@ -190,26 +192,34 @@ let insurance=document.getElementById("insurance").value;
 let insurance_expiry=document.getElementById("insurance_expiry").value;
 let insurance_img=document.getElementById("insurance_img").files[0];
 
-if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
+if(!name || !vehicle){
 document.getElementById("msg").innerHTML="Fill all fields";
 return;
 }
 
 /* Upload images */
 
-const licenseRef=ref(storage,"license/"+license_img.name);
+let licenseURL="",pucURL="",insuranceURL="";
+
+if(license_img){
+const licenseRef=ref(storage,"license/"+Date.now()+license_img.name);
 await uploadBytes(licenseRef,license_img);
-const licenseURL=await getDownloadURL(licenseRef);
+licenseURL=await getDownloadURL(licenseRef);
+}
 
-const pucRef=ref(storage,"puc/"+puc_img.name);
+if(puc_img){
+const pucRef=ref(storage,"puc/"+Date.now()+puc_img.name);
 await uploadBytes(pucRef,puc_img);
-const pucURL=await getDownloadURL(pucRef);
+pucURL=await getDownloadURL(pucRef);
+}
 
-const insuranceRef=ref(storage,"insurance/"+insurance_img.name);
+if(insurance_img){
+const insuranceRef=ref(storage,"insurance/"+Date.now()+insurance_img.name);
 await uploadBytes(insuranceRef,insurance_img);
-const insuranceURL=await getDownloadURL(insuranceRef);
+insuranceURL=await getDownloadURL(insuranceRef);
+}
 
-/* Save data in firestore */
+/* Save data */
 
 const docRef=await addDoc(collection(db,"vehicles"),{
 
@@ -230,9 +240,15 @@ insurance_image:insuranceURL
 
 });
 
-document.getElementById("msg").innerHTML=
-"Registered Successfully <br><br>"+
-"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
+document.getElementById("msg").innerHTML="Registered Successfully";
+
+/* Redirect to QR */
+
+setTimeout(()=>{
+
+window.location="qr.html?id="+docRef.id;
+
+},1500);
 
 }
 
