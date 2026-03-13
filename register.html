@@ -83,6 +83,7 @@ margin-top:15px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -159,96 +160,150 @@ margin-top:15px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+import { getFirestore, collection, addDoc }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import { getStorage, ref, uploadBytes, getDownloadURL }
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
 
 const firebaseConfig = {
+
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
+
 authDomain: "smart-traffic-30f86.firebaseapp.com",
+
 projectId: "smart-traffic-30f86",
+
 storageBucket: "smart-traffic-30f86.appspot.com",
+
 messagingSenderId: "16532299128",
+
 appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
+
 };
 
+
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
 const storage = getStorage(app);
+
 
 window.registerVehicle = async function(){
 
 let name=document.getElementById("name").value;
+
 let vehicle=document.getElementById("vehicle").value;
 
 let license=document.getElementById("license").value;
+
 let license_expiry=document.getElementById("license_expiry").value;
+
 let license_img=document.getElementById("license_img").files[0];
 
 let puc=document.getElementById("puc").value;
+
 let puc_expiry=document.getElementById("puc_expiry").value;
+
 let puc_img=document.getElementById("puc_img").files[0];
 
 let insurance=document.getElementById("insurance").value;
+
 let insurance_expiry=document.getElementById("insurance_expiry").value;
+
 let insurance_img=document.getElementById("insurance_img").files[0];
 
+
 if(!name || !vehicle){
-document.getElementById("msg").innerHTML="Fill all fields";
+
+document.getElementById("msg").innerHTML="Fill required fields";
+
 return;
+
 }
 
-/* Upload images */
 
-let licenseURL="",pucURL="",insuranceURL="";
+let licenseURL="";
+
+let pucURL="";
+
+let insuranceURL="";
+
 
 if(license_img){
+
 const licenseRef=ref(storage,"license/"+Date.now()+license_img.name);
+
 await uploadBytes(licenseRef,license_img);
+
 licenseURL=await getDownloadURL(licenseRef);
+
 }
+
 
 if(puc_img){
+
 const pucRef=ref(storage,"puc/"+Date.now()+puc_img.name);
+
 await uploadBytes(pucRef,puc_img);
+
 pucURL=await getDownloadURL(pucRef);
+
 }
+
 
 if(insurance_img){
+
 const insuranceRef=ref(storage,"insurance/"+Date.now()+insurance_img.name);
+
 await uploadBytes(insuranceRef,insurance_img);
+
 insuranceURL=await getDownloadURL(insuranceRef);
+
 }
 
-/* Save data */
 
 const docRef=await addDoc(collection(db,"vehicles"),{
 
 name,
+
 vehicle,
 
 license,
+
 license_expiry,
+
 license_image:licenseURL,
 
 puc,
+
 puc_expiry,
+
 puc_image:pucURL,
 
 insurance,
+
 insurance_expiry,
+
 insurance_image:insuranceURL
 
 });
 
+
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* Redirect to QR */
 
 setTimeout(()=>{
 
-window.location.href="./qr.html?id="+docRef.id;
+window.location.href="qr.html?id="+docRef.id;
 
 },1500);
+
 
 }
 
