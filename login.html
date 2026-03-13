@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Police Login</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+margin-top:100px;
+}
+
+input{
+padding:10px;
+margin:10px;
+width:200px;
+}
+
+button{
+padding:10px 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Police Login</h2>
+
+<input type="text" id="user" placeholder="Police ID"><br>
+<input type="password" id="pass" placeholder="Password"><br>
+
+<button onclick="login()">Login</button>
+
+<script>
+
+function login(){
+
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
+
+if(u=="police" && p=="1234"){
+
+localStorage.setItem("auth","true");
+window.location="status.html";
+
+}
+else{
+
+alert("Invalid Login");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
