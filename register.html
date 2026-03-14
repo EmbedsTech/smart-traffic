@@ -131,6 +131,11 @@ margin-top:10px;
 <input type="date" id="license_expiry">
 </div>
 
+<div class="full">
+<label>License Image</label>
+<input type="file" id="license_img">
+</div>
+
 <div>
 <label>PUC Number</label>
 <input type="text" id="puc">
@@ -141,6 +146,11 @@ margin-top:10px;
 <input type="date" id="puc_expiry">
 </div>
 
+<div class="full">
+<label>PUC Image</label>
+<input type="file" id="puc_img">
+</div>
+
 <div>
 <label>Insurance Number</label>
 <input type="text" id="insurance">
@@ -149,6 +159,11 @@ margin-top:10px;
 <div>
 <label>Insurance Expiry</label>
 <input type="date" id="insurance_expiry">
+</div>
+
+<div class="full">
+<label>Insurance Image</label>
+<input type="file" id="insurance_img">
 </div>
 
 <button type="submit">Submit & Generate QR</button>
@@ -182,17 +197,14 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let ownerName="";
-let vehicleNumber="";
 let qrImage="";
 
 /* Register */
 
 window.registerVehicle = async function(){
 
-ownerName=document.getElementById("name").value.trim();
-vehicleNumber=document.getElementById("vehicle").value.trim();
-
+let name=document.getElementById("name").value.trim();
+let vehicle=document.getElementById("vehicle").value.trim();
 let license=document.getElementById("license").value.trim();
 let license_expiry=document.getElementById("license_expiry").value;
 let puc=document.getElementById("puc").value.trim();
@@ -200,25 +212,32 @@ let puc_expiry=document.getElementById("puc_expiry").value;
 let insurance=document.getElementById("insurance").value.trim();
 let insurance_expiry=document.getElementById("insurance_expiry").value;
 
-if(!ownerName || !vehicleNumber || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
+let license_img=document.getElementById("license_img").files[0];
+let puc_img=document.getElementById("puc_img").files[0];
+let insurance_img=document.getElementById("insurance_img").files[0];
+
+if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
 
 document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
 return;
 
 }
 
-/* Save in Firestore */
+/* Save Firestore */
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 
-name:ownerName,
-vehicle:vehicleNumber,
+name,
+vehicle,
 license,
 license_expiry,
 puc,
 puc_expiry,
 insurance,
-insurance_expiry
+insurance_expiry,
+license_image: license_img ? license_img.name : "",
+puc_image: puc_img ? puc_img.name : "",
+insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
@@ -244,16 +263,9 @@ const { jsPDF } = window.jspdf;
 
 let pdf=new jsPDF();
 
-pdf.setFontSize(20);
-pdf.text("Vehicle QR Document",70,20);
+/* QR only */
 
-pdf.setFontSize(14);
-pdf.text("Owner Name : "+ownerName,20,50);
-pdf.text("Vehicle Number : "+vehicleNumber,20,65);
-
-/* Add QR */
-
-pdf.addImage(qrImage,"PNG",70,80,70,70);
+pdf.addImage(qrImage,"PNG",70,60,70,70);
 
 pdf.save("vehicle_qr.pdf");
 
