@@ -60,10 +60,6 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
-.full{
-grid-column:span 2;
-}
-
 button{
 grid-column:span 2;
 padding:12px;
@@ -86,17 +82,6 @@ margin-top:15px;
 font-weight:bold;
 }
 
-#qrcode{
-grid-column:span 2;
-text-align:center;
-margin-top:20px;
-}
-
-#downloadBtn{
-display:none;
-margin-top:10px;
-}
-
 </style>
 
 </head>
@@ -107,7 +92,7 @@ margin-top:10px;
 
 <h2>Vehicle Registration</h2>
 
-<form onsubmit="event.preventDefault(); registerVehicle();">
+<form id="vehicleForm" onsubmit="event.preventDefault(); registerVehicle();">
 
 <div>
 <label>Owner Name</label>
@@ -129,8 +114,8 @@ margin-top:10px;
 <input type="date" id="license_expiry">
 </div>
 
-<div class="full">
-<label>License Image</label>
+<div>
+<label>Upload License Image</label>
 <input type="file" id="license_img">
 </div>
 
@@ -144,13 +129,13 @@ margin-top:10px;
 <input type="date" id="puc_expiry">
 </div>
 
-<div class="full">
-<label>PUC Image</label>
+<div>
+<label>Upload PUC Image</label>
 <input type="file" id="puc_img">
 </div>
 
 <div>
-<label>Insurance Number</label>
+<label>Insurance ID</label>
 <input type="text" id="insurance">
 </div>
 
@@ -159,18 +144,14 @@ margin-top:10px;
 <input type="date" id="insurance_expiry">
 </div>
 
-<div class="full">
-<label>Insurance Image</label>
+<div>
+<label>Upload Insurance Image</label>
 <input type="file" id="insurance_img">
 </div>
 
 <button type="submit">Submit & Generate QR</button>
 
 <p id="msg"></p>
-
-<div id="qrcode"></div>
-
-<button id="downloadBtn" onclick="downloadQR()">Download QR</button>
 
 </form>
 
@@ -180,8 +161,6 @@ margin-top:10px;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* Firebase */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -195,8 +174,6 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* Register Vehicle */
-
 window.registerVehicle = async function(){
 
 let name=document.getElementById("name").value.trim();
@@ -208,14 +185,16 @@ let puc_expiry=document.getElementById("puc_expiry").value;
 let insurance=document.getElementById("insurance").value.trim();
 let insurance_expiry=document.getElementById("insurance_expiry").value;
 
+let license_img=document.getElementById("license_img").files[0];
+let puc_img=document.getElementById("puc_img").files[0];
+let insurance_img=document.getElementById("insurance_img").files[0];
+
 if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
 
 document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
 return;
 
 }
-
-/* Save to Firestore */
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 
@@ -226,35 +205,16 @@ license_expiry,
 puc,
 puc_expiry,
 insurance,
-insurance_expiry
+insurance_expiry,
+license_image: license_img ? license_img.name : "",
+puc_image: puc_img ? puc_img.name : "",
+insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
-document.getElementById("msg").innerHTML="Registered Successfully";
-
-/* QR Generate (White Background) */
-
-let qrData="https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id;
-
-document.getElementById("qrcode").innerHTML=
-"<img id='qrimg' src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+qrData+"'/>";
-
-document.getElementById("downloadBtn").style.display="block";
-
-}
-
-/* Download QR */
-
-window.downloadQR=function(){
-
-let img=document.getElementById("qrimg");
-
-let link=document.createElement("a");
-
-link.href=img.src;
-link.download="vehicle_qr.png";
-
-link.click();
+document.getElementById("msg").innerHTML=
+"Registered Successfully<br><br>"+
+"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
 
 }
 
