@@ -4,33 +4,116 @@
 <title>Police Login</title>
 
 <style>
+
 body{
 font-family:Arial;
-text-align:center;
-margin-top:100px;
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+
+/* background gradient */
+
+background: linear-gradient(135deg,#eaf4ff 0%,#cfe3ff 50%,#eaf4ff 100%);
 }
+
+
+/* login card */
+
+.login-box{
+
+width:350px;
+padding:40px;
+
+background:rgba(255,255,255,0.6);
+backdrop-filter:blur(12px);
+
+border-radius:15px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+text-align:center;
+}
+
+
+/* heading */
+
+h2{
+margin-bottom:25px;
+font-size:28px;
+}
+
+
+/* input fields */
 
 input{
-padding:10px;
-margin:10px;
-width:200px;
+
+width:100%;
+padding:12px;
+margin:10px 0;
+
+border:none;
+border-radius:8px;
+
+font-size:16px;
+
+box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
 }
 
+
+/* login button */
+
 button{
-padding:10px 20px;
+
+width:100%;
+padding:12px;
+
+margin-top:15px;
+
+border:none;
+border-radius:25px;
+
+font-size:18px;
+font-weight:bold;
+
+color:white;
+
+background:linear-gradient(90deg,#4e8df5,#2f6dd8);
+
+cursor:pointer;
+
+transition:0.3s;
 }
+
+
+/* hover effect */
+
+button:hover{
+
+transform:scale(1.05);
+
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+
+}
+
 </style>
 
 </head>
 
 <body>
 
+<div class="login-box">
+
 <h2>Police Login</h2>
 
-<input type="text" id="user" placeholder="Police ID"><br>
-<input type="password" id="pass" placeholder="Password"><br>
+<input type="text" id="user" placeholder="Police ID">
+
+<input type="password" id="pass" placeholder="Password">
 
 <button onclick="login()">Login</button>
+
+</div>
 
 <script>
 
@@ -42,9 +125,11 @@ let p=document.getElementById("pass").value;
 if(u=="police" && p=="1234"){
 
 localStorage.setItem("auth","true");
+
 window.location="status.html";
 
 }
+
 else{
 
 alert("Invalid Login");
