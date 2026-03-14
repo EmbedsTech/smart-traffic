@@ -1,48 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
-<title>Smart Document Verification System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Vehicle Registration</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Roboto',sans-serif;
+}
+
 body{
-font-family:Arial;
+background:#f4f6f8;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+width:100%;
+max-width:700px;
+}
+
+h2{
 text-align:center;
-background:#f2f2f2;
+margin-bottom:30px;
 }
 
-h1{
-font-family:Times New Roman;
-text-decoration:underline;
-font-size:40px;
-margin-bottom:20px;
+form{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
 }
 
-table{
-margin:auto;
-border-collapse:collapse;
-width:70%;
-font-size:20px;
-background:#d9d9d9;
-border:3px solid black;
+label{
+font-size:14px;
+margin-bottom:5px;
+display:block;
 }
 
-th,td{
-border:1px solid #999;
+input{
+width:100%;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+/* image rows full width */
+
+.full{
+grid-column:span 2;
+}
+
+button{
+grid-column:span 2;
 padding:12px;
+background:#007bff;
+color:white;
+border:none;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+#msg{
+grid-column:span 2;
 text-align:center;
-}
-
-th{
-background:#cfcfcf;
-}
-
-#final_status{
-font-size:50px;
+margin-top:15px;
 font-weight:bold;
-margin-top:30px;
+}
+
+#qrcode{
+grid-column:span 2;
+text-align:center;
+margin-top:20px;
+}
+
+#downloadBtn{
+display:none;
 }
 
 </style>
@@ -51,127 +106,186 @@ margin-top:30px;
 
 <body>
 
-<h1>Smart Document Verification System</h1>
+<div class="container">
 
-<table>
+<h2>Vehicle Registration</h2>
 
-<tr>
-<th>Title</th>
-<th>Details</th>
-<th>Status</th>
-</tr>
+<form onsubmit="event.preventDefault(); registerVehicle();">
 
-<tr>
-<th>Owner Name</th>
-<td id="owner"></td>
-<td>-</td>
-</tr>
+<!-- Owner / Vehicle -->
 
-<tr>
-<th>Vehicle Number</th>
-<td id="veh"></td>
-<td>-</td>
-</tr>
+<div>
+<label>Owner Name</label>
+<input type="text" id="name">
+</div>
 
-<tr>
-<th>PUC Number</th>
-<td id="puc"></td>
-<td>-</td>
-</tr>
+<div>
+<label>Vehicle Number</label>
+<input type="text" id="vehicle">
+</div>
 
-<tr>
-<th>PUC Expiry</th>
-<td id="puc_exp"></td>
-<td id="puc_status"></td>
-</tr>
+<!-- License -->
 
-<tr>
-<th>License Number</th>
-<td id="lic"></td>
-<td>-</td>
-</tr>
+<div>
+<label>License Number</label>
+<input type="text" id="license">
+</div>
 
-<tr>
-<th>License Expiry</th>
-<td id="lic_exp"></td>
-<td id="lic_status"></td>
-</tr>
+<div>
+<label>License Expiry</label>
+<input type="date" id="license_expiry">
+</div>
 
-<tr>
-<th>Insurance Number</th>
-<td id="ins"></td>
-<td>-</td>
-</tr>
+<div class="full">
+<label>License Image</label>
+<input type="file" id="license_img">
+</div>
 
-<tr>
-<th>Insurance Expiry</th>
-<td id="ins_exp"></td>
-<td id="ins_status"></td>
-</tr>
+<!-- PUC -->
 
-</table>
+<div>
+<label>PUC Number</label>
+<input type="text" id="puc">
+</div>
 
-<div id="final_status">CHECKING...</div>
+<div>
+<label>PUC Expiry</label>
+<input type="date" id="puc_expiry">
+</div>
 
-<script>
+<div class="full">
+<label>PUC Image</label>
+<input type="file" id="puc_img">
+</div>
 
-function checkStatus(){
+<!-- Insurance -->
 
-fetch("https://traffic-api-pjz9.onrender.com/result")
+<div>
+<label>Insurance Number</label>
+<input type="text" id="insurance">
+</div>
 
-.then(res => res.json())
+<div>
+<label>Insurance Expiry</label>
+<input type="date" id="insurance_expiry">
+</div>
 
-.then(data =>{
+<div class="full">
+<label>Insurance Image</label>
+<input type="file" id="insurance_img">
+</div>
 
-console.log(data);
+<button type="submit">Submit & Generate QR</button>
 
-/* Data Fetch */
+<p id="msg"></p>
 
-document.getElementById("owner").innerHTML=data.name || "-";
-document.getElementById("veh").innerHTML=data.vehicle || "-";
+<div id="qrcode"></div>
 
-document.getElementById("puc").innerHTML=data.puc || "-";
-document.getElementById("puc_exp").innerHTML=data.puc_expiry || "-";
+<button id="downloadBtn" onclick="downloadQR()">Download QR</button>
 
-document.getElementById("lic").innerHTML=data.license || "-";
-document.getElementById("lic_exp").innerHTML=data.license_expiry || "-";
+</form>
 
-document.getElementById("ins").innerHTML=data.insurance || "-";
-document.getElementById("ins_exp").innerHTML=data.insurance_expiry || "-";
+</div>
 
-/* Expiry Check */
+<script type="module">
 
-let today = new Date();
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-let puc_valid = new Date(data.puc_expiry) >= today;
-let lic_valid = new Date(data.license_expiry) >= today;
-let ins_valid = new Date(data.insurance_expiry) >= today;
+const firebaseConfig = {
+apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
+authDomain: "smart-traffic-30f86.firebaseapp.com",
+projectId: "smart-traffic-30f86",
+storageBucket: "smart-traffic-30f86.appspot.com",
+messagingSenderId: "16532299128",
+appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
+};
 
-/* Individual Status */
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-document.getElementById("puc_status").innerHTML = puc_valid ? "VALID" : "INVALID";
-document.getElementById("lic_status").innerHTML = lic_valid ? "VALID" : "INVALID";
-document.getElementById("ins_status").innerHTML = ins_valid ? "VALID" : "INVALID";
+window.registerVehicle = async function(){
 
-/* Final Status */
+let name=document.getElementById("name").value.trim();
+let vehicle=document.getElementById("vehicle").value.trim();
+let license=document.getElementById("license").value.trim();
+let license_expiry=document.getElementById("license_expiry").value;
+let puc=document.getElementById("puc").value.trim();
+let puc_expiry=document.getElementById("puc_expiry").value;
+let insurance=document.getElementById("insurance").value.trim();
+let insurance_expiry=document.getElementById("insurance_expiry").value;
 
-if(puc_valid && lic_valid && ins_valid){
+let license_img=document.getElementById("license_img").files[0];
+let puc_img=document.getElementById("puc_img").files[0];
+let insurance_img=document.getElementById("insurance_img").files[0];
 
-document.getElementById("final_status").innerHTML="FINAL STATUS : VALID";
-document.body.style.background="#9cff9c";
+if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
+
+document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
+return;
+
+}
+
+const docRef = await addDoc(collection(db,"vehicles"),{
+
+name,
+vehicle,
+license,
+license_expiry,
+puc,
+puc_expiry,
+insurance,
+insurance_expiry,
+license_image: license_img ? license_img.name : "",
+puc_image: puc_img ? puc_img.name : "",
+insurance_image: insurance_img ? insurance_img.name : ""
+
+});
+
+document.getElementById("msg").innerHTML="Registered Successfully";
+
+/* Generate QR */
+
+document.getElementById("qrcode").innerHTML="";
+
+new QRCode(document.getElementById("qrcode"),{
+text:"https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id,
+width:200,
+height:200
+});
+
+document.getElementById("downloadBtn").style.display="block";
+
+}
+
+/* MOBILE + LAPTOP QR DOWNLOAD */
+
+window.downloadQR=function(){
+
+let canvas=document.querySelector("#qrcode canvas");
+
+if(canvas){
+
+let image=canvas.toDataURL("image/png");
+
+let link=document.createElement("a");
+
+link.href=image;
+link.download="vehicle_qr.png";
+
+document.body.appendChild(link);
+
+link.click();
+
+document.body.removeChild(link);
 
 }else{
 
-document.getElementById("final_status").innerHTML="FINAL STATUS : INVALID";
-document.body.style.background="#ff9c9c";
+alert("QR not generated");
 
 }
 
-})
-
 }
-
-setInterval(checkStatus,2000);
 
 </script>
 
