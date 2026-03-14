@@ -88,20 +88,17 @@ margin-top:15px;
 font-weight:bold;
 }
 
-/* QR box */
-
-#qrbox{
+#qrcode{
 grid-column:span 2;
 text-align:center;
 margin-top:20px;
+padding:15px;
 background:white;
-padding:20px;
-border-radius:6px;
 }
 
 #downloadBtn{
-margin-top:15px;
 display:none;
+margin-top:10px;
 }
 
 </style>
@@ -175,10 +172,9 @@ display:none;
 
 <p id="msg"></p>
 
-<div id="qrbox">
 <div id="qrcode"></div>
+
 <button id="downloadBtn" onclick="downloadQR()">Download QR</button>
-</div>
 
 </form>
 
@@ -188,6 +184,8 @@ display:none;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* Firebase */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -200,6 +198,8 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+/* Register Vehicle */
 
 window.registerVehicle = async function(){
 
@@ -219,6 +219,8 @@ return;
 
 }
 
+/* Save in Firestore */
+
 const docRef = await addDoc(collection(db,"vehicles"),{
 
 name,
@@ -234,7 +236,7 @@ insurance_expiry
 
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* QR Generate */
+/* Generate QR */
 
 document.getElementById("qrcode").innerHTML="";
 
@@ -246,24 +248,40 @@ colorDark:"#000000",
 colorLight:"#ffffff"
 });
 
-document.getElementById("downloadBtn").style.display="inline-block";
+document.getElementById("downloadBtn").style.display="block";
 
 }
 
-/* QR download */
+/* Download QR with forced white background */
 
 window.downloadQR=function(){
 
 let canvas=document.querySelector("#qrcode canvas");
 
-let image=canvas.toDataURL("image/png");
+let newCanvas=document.createElement("canvas");
+newCanvas.width=canvas.width;
+newCanvas.height=canvas.height;
+
+let ctx=newCanvas.getContext("2d");
+
+/* white background */
+
+ctx.fillStyle="#ffffff";
+ctx.fillRect(0,0,newCanvas.width,newCanvas.height);
+
+/* draw qr */
+
+ctx.drawImage(canvas,0,0);
+
+let image=newCanvas.toDataURL("image/png");
 
 let link=document.createElement("a");
-
 link.href=image;
 link.download="vehicle_qr.png";
 
+document.body.appendChild(link);
 link.click();
+document.body.removeChild(link);
 
 }
 
