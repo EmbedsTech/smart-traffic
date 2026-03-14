@@ -62,6 +62,12 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
+/* image rows full width */
+
+.full{
+grid-column:span 2;
+}
+
 button{
 grid-column:span 2;
 padding:12px;
@@ -104,7 +110,9 @@ display:none;
 
 <h2>Vehicle Registration</h2>
 
-<form id="vehicleForm" onsubmit="event.preventDefault(); registerVehicle();">
+<form onsubmit="event.preventDefault(); registerVehicle();">
+
+<!-- Owner / Vehicle -->
 
 <div>
 <label>Owner Name</label>
@@ -116,6 +124,8 @@ display:none;
 <input type="text" id="vehicle">
 </div>
 
+<!-- License -->
+
 <div>
 <label>License Number</label>
 <input type="text" id="license">
@@ -126,10 +136,12 @@ display:none;
 <input type="date" id="license_expiry">
 </div>
 
-<div>
-<label>Upload License Image</label>
+<div class="full">
+<label>License Image</label>
 <input type="file" id="license_img">
 </div>
+
+<!-- PUC -->
 
 <div>
 <label>PUC Number</label>
@@ -141,13 +153,15 @@ display:none;
 <input type="date" id="puc_expiry">
 </div>
 
-<div>
-<label>Upload PUC Image</label>
+<div class="full">
+<label>PUC Image</label>
 <input type="file" id="puc_img">
 </div>
 
+<!-- Insurance -->
+
 <div>
-<label>Insurance ID</label>
+<label>Insurance Number</label>
 <input type="text" id="insurance">
 </div>
 
@@ -156,8 +170,8 @@ display:none;
 <input type="date" id="insurance_expiry">
 </div>
 
-<div>
-<label>Upload Insurance Image</label>
+<div class="full">
+<label>Insurance Image</label>
 <input type="file" id="insurance_img">
 </div>
 
@@ -189,8 +203,6 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-let qr;
 
 window.registerVehicle = async function(){
 
@@ -232,34 +244,46 @@ insurance_image: insurance_img ? insurance_img.name : ""
 
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* QR Generate */
+/* Generate QR */
 
 document.getElementById("qrcode").innerHTML="";
 
-qr = new QRCode(document.getElementById("qrcode"),{
+new QRCode(document.getElementById("qrcode"),{
 text:"https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id,
 width:200,
 height:200
 });
 
-/* Show download button */
-
 document.getElementById("downloadBtn").style.display="block";
 
 }
 
-/* QR Download */
+/* MOBILE + LAPTOP QR DOWNLOAD */
 
 window.downloadQR=function(){
 
-let img=document.querySelector("#qrcode img");
+let canvas=document.querySelector("#qrcode canvas");
+
+if(canvas){
+
+let image=canvas.toDataURL("image/png");
 
 let link=document.createElement("a");
 
-link.href=img.src;
+link.href=image;
 link.download="vehicle_qr.png";
 
+document.body.appendChild(link);
+
 link.click();
+
+document.body.removeChild(link);
+
+}else{
+
+alert("QR not generated");
+
+}
 
 }
 
