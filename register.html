@@ -8,57 +8,72 @@
 
 <title>Vehicle Registration</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Roboto',sans-serif;
+}
+
 body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
+background:#f4f6f8;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
 }
 
 .container{
 background:white;
-width:600px;
-margin:auto;
-padding:30px;
-margin-top:40px;
+padding:40px;
 border-radius:10px;
-box-shadow:0 0 10px gray;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+width:100%;
+max-width:700px;
 }
 
 h2{
-margin-bottom:20px;
+text-align:center;
+margin-bottom:30px;
 }
 
 form{
 display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
+grid-template-columns:repeat(2,1fr);
+gap:20px;
 }
 
 label{
-text-align:left;
 font-size:14px;
+margin-bottom:5px;
+display:block;
 }
 
 input{
-padding:8px;
 width:100%;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
 }
 
 .full{
-grid-column:1/3;
+grid-column:span 2;
 }
 
 button{
-grid-column:1/3;
-padding:10px;
+grid-column:span 2;
+padding:12px;
 background:#007bff;
 color:white;
 border:none;
 font-size:16px;
+border-radius:6px;
 cursor:pointer;
 }
 
@@ -66,7 +81,16 @@ button:hover{
 background:#0056b3;
 }
 
+#msg{
+grid-column:span 2;
+text-align:center;
+margin-top:15px;
+font-weight:bold;
+}
+
 #qrcode{
+grid-column:span 2;
+text-align:center;
 margin-top:20px;
 }
 
@@ -142,15 +166,15 @@ margin-top:10px;
 <input type="file" id="insurance_img">
 </div>
 
-<button type="submit">Register & Generate QR</button>
-
-</form>
+<button type="submit">Submit & Generate QR</button>
 
 <p id="msg"></p>
 
 <div id="qrcode"></div>
 
 <button id="downloadBtn" onclick="downloadPDF()">Download QR PDF</button>
+
+</form>
 
 </div>
 
@@ -174,29 +198,32 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let qrImage="";
-let vehicleID="";
 
 /* Register */
 
 window.registerVehicle = async function(){
 
-let name=document.getElementById("name").value;
-let vehicle=document.getElementById("vehicle").value;
-let license=document.getElementById("license").value;
+let name=document.getElementById("name").value.trim();
+let vehicle=document.getElementById("vehicle").value.trim();
+let license=document.getElementById("license").value.trim();
 let license_expiry=document.getElementById("license_expiry").value;
-let puc=document.getElementById("puc").value;
+let puc=document.getElementById("puc").value.trim();
 let puc_expiry=document.getElementById("puc_expiry").value;
-let insurance=document.getElementById("insurance").value;
+let insurance=document.getElementById("insurance").value.trim();
 let insurance_expiry=document.getElementById("insurance_expiry").value;
+
+let license_img=document.getElementById("license_img").files[0];
+let puc_img=document.getElementById("puc_img").files[0];
+let insurance_img=document.getElementById("insurance_img").files[0];
 
 if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
 
-document.getElementById("msg").innerHTML="Fill all fields";
+document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
 return;
 
 }
 
-/* Save Data */
+/* Save Firestore */
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 
@@ -207,21 +234,22 @@ license_expiry,
 puc,
 puc_expiry,
 insurance,
-insurance_expiry
+insurance_expiry,
+license_image: license_img ? license_img.name : "",
+puc_image: puc_img ? puc_img.name : "",
+insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
-vehicleID = docRef.id;
-
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* QR Generate → ONLY ID */
+/* QR Generate */
 
-let qrData = vehicleID;
+let qrData = docRef.id;   // ONLY ID
 
 qrImage="https://api.qrserver.com/v1/create-qr-code/?size=250x250&bgcolor=ffffff&data="+qrData;
 
-document.getElementById("qrcode").innerHTML="<img src='"+qrImage+"'>";
+document.getElementById("qrcode").innerHTML="<img id='qrimg' src='"+qrImage+"'>";
 
 document.getElementById("downloadBtn").style.display="block";
 
