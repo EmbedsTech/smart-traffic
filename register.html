@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,6 +10,8 @@
 <title>Vehicle Registration</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
 
@@ -82,6 +85,13 @@ margin-top:15px;
 font-weight:bold;
 }
 
+#qrSection{
+grid-column:span 2;
+text-align:center;
+margin-top:20px;
+display:none;
+}
+
 </style>
 
 </head>
@@ -153,6 +163,18 @@ font-weight:bold;
 
 <p id="msg"></p>
 
+<div id="qrSection">
+
+<h3>Vehicle QR Code</h3>
+
+<div id="qrcode"></div>
+
+<br>
+
+<button type="button" onclick="downloadQR()">Download QR Code</button>
+
+</div>
+
 </form>
 
 </div>
@@ -212,14 +234,38 @@ insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
-document.getElementById("msg").innerHTML=
-"Registered Successfully<br><br>"+
-"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
+document.getElementById("msg").innerHTML="Registered Successfully";
+
+document.getElementById("qrSection").style.display="block";
+
+document.getElementById("qrcode").innerHTML="";
+
+new QRCode(document.getElementById("qrcode"),{
+text: docRef.id,
+width:200,
+height:200,
+colorDark:"#000000",
+colorLight:"#ffffff",
+correctLevel:QRCode.CorrectLevel.H
+});
+
+}
+
+window.downloadQR=function(){
+
+let img=document.querySelector("#qrcode img");
+
+let link=document.createElement("a");
+
+link.href=img.src;
+
+link.download="vehicle_qr.png";
+
+link.click();
 
 }
 
 </script>
 
 </body>
-
 </html>
