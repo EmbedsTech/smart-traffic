@@ -20,12 +20,6 @@ font-size:40px;
 margin-bottom:20px;
 }
 
-#status{
-font-size:60px;
-font-weight:bold;
-margin:20px;
-}
-
 table{
 margin:auto;
 border-collapse:collapse;
@@ -46,7 +40,7 @@ background:#cfcfcf;
 }
 
 #final_status{
-font-size:45px;
+font-size:50px;
 font-weight:bold;
 margin-top:30px;
 }
@@ -58,8 +52,6 @@ margin-top:30px;
 <body>
 
 <h1>Smart Document Verification System</h1>
-
-<div id="status">WAITING...</div>
 
 <table>
 
@@ -119,7 +111,7 @@ margin-top:30px;
 
 </table>
 
-<div id="final_status">WAITING...</div>
+<div id="final_status">CHECKING...</div>
 
 <script>
 
@@ -158,12 +150,10 @@ let ins_valid = new Date(data.insurance_expiry) >= today;
 /* Individual Status */
 
 document.getElementById("puc_status").innerHTML = puc_valid ? "VALID" : "INVALID";
-
 document.getElementById("lic_status").innerHTML = lic_valid ? "VALID" : "INVALID";
-
 document.getElementById("ins_status").innerHTML = ins_valid ? "VALID" : "INVALID";
 
-/* FINAL STATUS */
+/* Final Status */
 
 if(puc_valid && lic_valid && ins_valid){
 
