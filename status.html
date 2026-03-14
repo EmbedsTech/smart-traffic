@@ -10,9 +10,9 @@
 body{
 font-family:Arial;
 text-align:center;
-background: linear-gradient(135deg, #7fb3ff 0%, #3f7de0 50%, #7fb3ff 100%);
 margin:0;
 min-height:100vh;
+background: linear-gradient(135deg,#eaf4ff 0%,#d6e9ff 50%,#eaf4ff 100%);
 }
 
 h1{
@@ -30,62 +30,72 @@ margin:auto;
 border-collapse:collapse;
 width:70%;
 font-size:20px;
-background:#f0f0f0;
-border:3px solid black;
+
+/* glass effect */
+background: rgba(255,255,255,0.6);
+backdrop-filter: blur(10px);
+border-radius:15px;
+overflow:hidden;
+
+/* shadow */
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
 }
 
 th,td{
-border:1px solid #bbb;
-padding:12px;
+padding:14px;
+border-bottom:1px solid rgba(0,0,0,0.1);
 text-align:center;
 }
 
 th{
-background:#e0e0e0;
+background:rgba(255,255,255,0.8);
+font-weight:bold;
 }
 
 /* status badge */
 
 .valid{
 color:white;
-background:#28a745;
-padding:5px 12px;
-border-radius:5px;
+background:#4CAF84;
+padding:6px 16px;
+border-radius:20px;
 font-weight:bold;
+font-size:14px;
 }
 
 .invalid{
 color:white;
-background:#dc3545;
-padding:5px 12px;
-border-radius:5px;
+background:#e74c3c;
+padding:6px 16px;
+border-radius:20px;
 font-weight:bold;
+font-size:14px;
 }
 
 /* FINAL RESULT RECTANGLE */
 
 #final_status{
 margin-top:40px;
-font-size:40px;
+font-size:32px;
 font-weight:bold;
-padding:20px 40px;
-width:650px;          /* box length increase */
+padding:18px 40px;
+width:500px;
 margin-left:auto;
 margin-right:auto;
-border-radius:8px;
-white-space:nowrap;   /* text break stop */
+border-radius:40px;
+color:white;
+
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* colors */
 
+/* colors */
 .final_valid{
-background:#28a745;
-color:white;
+background:linear-gradient(90deg,#5fd18c,#3fbf9c);
 }
 
 .final_invalid{
-background:#dc3545;
-color:white;
+background:linear-gradient(90deg,#ff6b6b,#e74c3c);
 }
 
 </style>
