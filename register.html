@@ -10,8 +10,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-
 <style>
 
 *{
@@ -92,8 +90,6 @@ font-weight:bold;
 grid-column:span 2;
 text-align:center;
 margin-top:20px;
-padding:15px;
-background:white;
 }
 
 #downloadBtn{
@@ -219,7 +215,7 @@ return;
 
 }
 
-/* Save in Firestore */
+/* Save to Firestore */
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 
@@ -236,52 +232,29 @@ insurance_expiry
 
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* Generate QR */
+/* QR Generate (White Background) */
 
-document.getElementById("qrcode").innerHTML="";
+let qrData="https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id;
 
-new QRCode(document.getElementById("qrcode"),{
-text:"https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id,
-width:220,
-height:220,
-colorDark:"#000000",
-colorLight:"#ffffff"
-});
+document.getElementById("qrcode").innerHTML=
+"<img id='qrimg' src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+qrData+"'/>";
 
 document.getElementById("downloadBtn").style.display="block";
 
 }
 
-/* Download QR with forced white background */
+/* Download QR */
 
 window.downloadQR=function(){
 
-let canvas=document.querySelector("#qrcode canvas");
-
-let newCanvas=document.createElement("canvas");
-newCanvas.width=canvas.width;
-newCanvas.height=canvas.height;
-
-let ctx=newCanvas.getContext("2d");
-
-/* white background */
-
-ctx.fillStyle="#ffffff";
-ctx.fillRect(0,0,newCanvas.width,newCanvas.height);
-
-/* draw qr */
-
-ctx.drawImage(canvas,0,0);
-
-let image=newCanvas.toDataURL("image/png");
+let img=document.getElementById("qrimg");
 
 let link=document.createElement("a");
-link.href=image;
+
+link.href=img.src;
 link.download="vehicle_qr.png";
 
-document.body.appendChild(link);
 link.click();
-document.body.removeChild(link);
 
 }
 
