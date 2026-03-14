@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 <title>Smart Document Verification System</title>
 
 <style>
@@ -12,14 +11,34 @@ font-family:Arial;
 text-align:center;
 margin:0;
 min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+
 background: linear-gradient(135deg,#eaf4ff 0%,#d6e9ff 50%,#eaf4ff 100%);
 }
 
+/* MAIN CARD */
+
+.container{
+
+width:900px;
+
+background:rgba(255,255,255,0.6);
+backdrop-filter:blur(12px);
+
+padding:40px;
+
+border-radius:20px;
+
+box-shadow:0 15px 40px rgba(0,0,0,0.2);
+}
+
+/* heading */
+
 h1{
-font-family:Times New Roman;
-text-decoration:underline;
+font-family:"Times New Roman";
 font-size:40px;
-margin-top:30px;
 margin-bottom:30px;
 }
 
@@ -28,28 +47,20 @@ margin-bottom:30px;
 table{
 margin:auto;
 border-collapse:collapse;
-width:70%;
-font-size:20px;
-
-/* glass effect */
-background: rgba(255,255,255,0.6);
-backdrop-filter: blur(10px);
-border-radius:15px;
+width:100%;
+font-size:18px;
+background:rgba(255,255,255,0.7);
+border-radius:10px;
 overflow:hidden;
-
-/* shadow */
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
 }
 
 th,td{
 padding:14px;
 border-bottom:1px solid rgba(0,0,0,0.1);
-text-align:center;
 }
 
 th{
-background:rgba(255,255,255,0.8);
-font-weight:bold;
+background:rgba(255,255,255,0.9);
 }
 
 /* status badge */
@@ -72,24 +83,29 @@ font-weight:bold;
 font-size:14px;
 }
 
-/* FINAL RESULT RECTANGLE */
+/* FINAL RESULT */
 
 #final_status{
-margin-top:40px;
-font-size:32px;
+
+margin-top:30px;
+
+font-size:28px;
 font-weight:bold;
+
 padding:18px 40px;
-width:500px;
+
+width:420px;
+
 margin-left:auto;
 margin-right:auto;
+
 border-radius:40px;
+
 color:white;
 
 box-shadow:0 10px 20px rgba(0,0,0,0.2);
 }
 
-
-/* colors */
 .final_valid{
 background:linear-gradient(90deg,#5fd18c,#3fbf9c);
 }
@@ -103,6 +119,8 @@ background:linear-gradient(90deg,#ff6b6b,#e74c3c);
 </head>
 
 <body>
+
+<div class="container">
 
 <h1>Smart Document Verification System</h1>
 
@@ -166,6 +184,8 @@ background:linear-gradient(90deg,#ff6b6b,#e74c3c);
 
 <div id="final_status">CHECKING...</div>
 
+</div>
+
 <script>
 
 function checkStatus(){
@@ -175,8 +195,6 @@ fetch("https://traffic-api-pjz9.onrender.com/result")
 .then(res=>res.json())
 
 .then(data=>{
-
-/* Data */
 
 document.getElementById("owner").innerHTML=data.name || "-";
 document.getElementById("veh").innerHTML=data.vehicle || "-";
@@ -190,15 +208,11 @@ document.getElementById("lic_exp").innerHTML=data.license_expiry || "-";
 document.getElementById("ins").innerHTML=data.insurance || "-";
 document.getElementById("ins_exp").innerHTML=data.insurance_expiry || "-";
 
-/* Expiry Check */
-
 let today=new Date();
 
 let puc_valid=new Date(data.puc_expiry)>=today;
 let lic_valid=new Date(data.license_expiry)>=today;
 let ins_valid=new Date(data.insurance_expiry)>=today;
-
-/* Individual status */
 
 document.getElementById("puc_status").innerHTML =
 puc_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID</span>";
@@ -208,8 +222,6 @@ lic_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID<
 
 document.getElementById("ins_status").innerHTML =
 ins_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID</span>";
-
-/* Final Status */
 
 let finalBox=document.getElementById("final_status");
 
@@ -234,5 +246,4 @@ setInterval(checkStatus,2000);
 </script>
 
 </body>
-
 </html>
