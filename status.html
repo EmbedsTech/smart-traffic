@@ -45,6 +45,12 @@ th{
 background:#cfcfcf;
 }
 
+#final_status{
+font-size:45px;
+font-weight:bold;
+margin-top:30px;
+}
+
 </style>
 
 </head>
@@ -113,6 +119,8 @@ background:#cfcfcf;
 
 </table>
 
+<div id="final_status">WAITING...</div>
+
 <script>
 
 function checkStatus(){
@@ -124,20 +132,6 @@ fetch("https://traffic-api-pjz9.onrender.com/result")
 .then(data =>{
 
 console.log(data);
-
-/* VALID / INVALID */
-
-if(data.status=="VALID"){
-
-document.getElementById("status").innerHTML="VALID";
-document.body.style.background="#9cff9c";
-
-}else{
-
-document.getElementById("status").innerHTML="INVALID";
-document.body.style.background="#ff9c9c";
-
-}
 
 /* Data Fetch */
 
@@ -153,7 +147,37 @@ document.getElementById("lic_exp").innerHTML=data.license_expiry || "-";
 document.getElementById("ins").innerHTML=data.insurance || "-";
 document.getElementById("ins_exp").innerHTML=data.insurance_expiry || "-";
 
-});
+/* Expiry Check */
+
+let today = new Date();
+
+let puc_valid = new Date(data.puc_expiry) >= today;
+let lic_valid = new Date(data.license_expiry) >= today;
+let ins_valid = new Date(data.insurance_expiry) >= today;
+
+/* Individual Status */
+
+document.getElementById("puc_status").innerHTML = puc_valid ? "VALID" : "INVALID";
+
+document.getElementById("lic_status").innerHTML = lic_valid ? "VALID" : "INVALID";
+
+document.getElementById("ins_status").innerHTML = ins_valid ? "VALID" : "INVALID";
+
+/* FINAL STATUS */
+
+if(puc_valid && lic_valid && ins_valid){
+
+document.getElementById("final_status").innerHTML="FINAL STATUS : VALID";
+document.body.style.background="#9cff9c";
+
+}else{
+
+document.getElementById("final_status").innerHTML="FINAL STATUS : INVALID";
+document.body.style.background="#ff9c9c";
+
+}
+
+})
 
 }
 
