@@ -8,66 +8,57 @@
 
 <title>Vehicle Registration</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Roboto',sans-serif;
-}
-
 body{
-background:#f4f6f8;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
 }
 
 .container{
 background:white;
-padding:40px;
+width:600px;
+margin:auto;
+padding:30px;
+margin-top:40px;
 border-radius:10px;
-box-shadow:0 8px 20px rgba(0,0,0,0.1);
-width:100%;
-max-width:700px;
+box-shadow:0 0 10px gray;
 }
 
 h2{
-text-align:center;
-margin-bottom:30px;
+margin-bottom:20px;
 }
 
 form{
 display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:20px;
+grid-template-columns:1fr 1fr;
+gap:15px;
 }
 
 label{
+text-align:left;
 font-size:14px;
-margin-bottom:5px;
-display:block;
 }
 
 input{
+padding:8px;
 width:100%;
-padding:10px;
-border:1px solid #ccc;
-border-radius:6px;
+}
+
+.full{
+grid-column:1/3;
 }
 
 button{
-grid-column:span 2;
-padding:12px;
+grid-column:1/3;
+padding:10px;
 background:#007bff;
 color:white;
 border:none;
 font-size:16px;
-border-radius:6px;
 cursor:pointer;
 }
 
@@ -75,11 +66,13 @@ button:hover{
 background:#0056b3;
 }
 
-#msg{
-grid-column:span 2;
-text-align:center;
-margin-top:15px;
-font-weight:bold;
+#qrcode{
+margin-top:20px;
+}
+
+#downloadBtn{
+display:none;
+margin-top:10px;
 }
 
 </style>
@@ -92,7 +85,7 @@ font-weight:bold;
 
 <h2>Vehicle Registration</h2>
 
-<form id="vehicleForm" onsubmit="event.preventDefault(); registerVehicle();">
+<form onsubmit="event.preventDefault(); registerVehicle();">
 
 <div>
 <label>Owner Name</label>
@@ -114,8 +107,8 @@ font-weight:bold;
 <input type="date" id="license_expiry">
 </div>
 
-<div>
-<label>Upload License Image</label>
+<div class="full">
+<label>License Image</label>
 <input type="file" id="license_img">
 </div>
 
@@ -129,13 +122,13 @@ font-weight:bold;
 <input type="date" id="puc_expiry">
 </div>
 
-<div>
-<label>Upload PUC Image</label>
+<div class="full">
+<label>PUC Image</label>
 <input type="file" id="puc_img">
 </div>
 
 <div>
-<label>Insurance ID</label>
+<label>Insurance Number</label>
 <input type="text" id="insurance">
 </div>
 
@@ -144,16 +137,20 @@ font-weight:bold;
 <input type="date" id="insurance_expiry">
 </div>
 
-<div>
-<label>Upload Insurance Image</label>
+<div class="full">
+<label>Insurance Image</label>
 <input type="file" id="insurance_img">
 </div>
 
-<button type="submit">Submit & Generate QR</button>
+<button type="submit">Register & Generate QR</button>
+
+</form>
 
 <p id="msg"></p>
 
-</form>
+<div id="qrcode"></div>
+
+<button id="downloadBtn" onclick="downloadPDF()">Download QR PDF</button>
 
 </div>
 
@@ -161,6 +158,8 @@ font-weight:bold;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* Firebase */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -174,27 +173,30 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let qrImage="";
+let vehicleID="";
+
+/* Register */
+
 window.registerVehicle = async function(){
 
-let name=document.getElementById("name").value.trim();
-let vehicle=document.getElementById("vehicle").value.trim();
-let license=document.getElementById("license").value.trim();
+let name=document.getElementById("name").value;
+let vehicle=document.getElementById("vehicle").value;
+let license=document.getElementById("license").value;
 let license_expiry=document.getElementById("license_expiry").value;
-let puc=document.getElementById("puc").value.trim();
+let puc=document.getElementById("puc").value;
 let puc_expiry=document.getElementById("puc_expiry").value;
-let insurance=document.getElementById("insurance").value.trim();
+let insurance=document.getElementById("insurance").value;
 let insurance_expiry=document.getElementById("insurance_expiry").value;
-
-let license_img=document.getElementById("license_img").files[0];
-let puc_img=document.getElementById("puc_img").files[0];
-let insurance_img=document.getElementById("insurance_img").files[0];
 
 if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
 
-document.getElementById("msg").innerHTML="<span style='color:red'>Please fill all fields</span>";
+document.getElementById("msg").innerHTML="Fill all fields";
 return;
 
 }
+
+/* Save Data */
 
 const docRef = await addDoc(collection(db,"vehicles"),{
 
@@ -205,16 +207,39 @@ license_expiry,
 puc,
 puc_expiry,
 insurance,
-insurance_expiry,
-license_image: license_img ? license_img.name : "",
-puc_image: puc_img ? puc_img.name : "",
-insurance_image: insurance_img ? insurance_img.name : ""
+insurance_expiry
 
 });
 
-document.getElementById("msg").innerHTML=
-"Registered Successfully<br><br>"+
-"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
+vehicleID = docRef.id;
+
+document.getElementById("msg").innerHTML="Registered Successfully";
+
+/* QR Generate → ONLY ID */
+
+let qrData = vehicleID;
+
+qrImage="https://api.qrserver.com/v1/create-qr-code/?size=250x250&bgcolor=ffffff&data="+qrData;
+
+document.getElementById("qrcode").innerHTML="<img src='"+qrImage+"'>";
+
+document.getElementById("downloadBtn").style.display="block";
+
+}
+
+/* PDF Download */
+
+window.downloadPDF=function(){
+
+const { jsPDF } = window.jspdf;
+
+let pdf=new jsPDF();
+
+/* QR only */
+
+pdf.addImage(qrImage,"PNG",70,60,70,70);
+
+pdf.save("vehicle_qr.pdf");
 
 }
 
