@@ -10,8 +10,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
 
 *{
@@ -62,10 +60,6 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
-.full{
-grid-column:span 2;
-}
-
 button{
 grid-column:span 2;
 padding:12px;
@@ -88,17 +82,6 @@ margin-top:15px;
 font-weight:bold;
 }
 
-#qrcode{
-grid-column:span 2;
-text-align:center;
-margin-top:20px;
-}
-
-#downloadBtn{
-display:none;
-margin-top:10px;
-}
-
 </style>
 
 </head>
@@ -109,7 +92,7 @@ margin-top:10px;
 
 <h2>Vehicle Registration</h2>
 
-<form onsubmit="event.preventDefault(); registerVehicle();">
+<form id="vehicleForm" onsubmit="event.preventDefault(); registerVehicle();">
 
 <div>
 <label>Owner Name</label>
@@ -131,8 +114,8 @@ margin-top:10px;
 <input type="date" id="license_expiry">
 </div>
 
-<div class="full">
-<label>License Image</label>
+<div>
+<label>Upload License Image</label>
 <input type="file" id="license_img">
 </div>
 
@@ -146,13 +129,13 @@ margin-top:10px;
 <input type="date" id="puc_expiry">
 </div>
 
-<div class="full">
-<label>PUC Image</label>
+<div>
+<label>Upload PUC Image</label>
 <input type="file" id="puc_img">
 </div>
 
 <div>
-<label>Insurance Number</label>
+<label>Insurance ID</label>
 <input type="text" id="insurance">
 </div>
 
@@ -161,18 +144,14 @@ margin-top:10px;
 <input type="date" id="insurance_expiry">
 </div>
 
-<div class="full">
-<label>Insurance Image</label>
+<div>
+<label>Upload Insurance Image</label>
 <input type="file" id="insurance_img">
 </div>
 
 <button type="submit">Submit & Generate QR</button>
 
 <p id="msg"></p>
-
-<div id="qrcode"></div>
-
-<button id="downloadBtn" onclick="downloadPDF()">Download QR PDF</button>
 
 </form>
 
@@ -182,8 +161,6 @@ margin-top:10px;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* Firebase */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -196,10 +173,6 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-let qrImage="";
-
-/* Register */
 
 window.registerVehicle = async function(){
 
@@ -223,8 +196,6 @@ return;
 
 }
 
-/* Save Firestore */
-
 const docRef = await addDoc(collection(db,"vehicles"),{
 
 name,
@@ -241,33 +212,9 @@ insurance_image: insurance_img ? insurance_img.name : ""
 
 });
 
-document.getElementById("msg").innerHTML="Registered Successfully";
-
-/* QR Generate */
-
-let qrData="https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id;
-
-qrImage="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data="+qrData;
-
-document.getElementById("qrcode").innerHTML="<img id='qrimg' src='"+qrImage+"'>";
-
-document.getElementById("downloadBtn").style.display="block";
-
-}
-
-/* PDF Download */
-
-window.downloadPDF=function(){
-
-const { jsPDF } = window.jspdf;
-
-let pdf=new jsPDF();
-
-/* QR only */
-
-pdf.addImage(qrImage,"PNG",70,60,70,70);
-
-pdf.save("vehicle_qr.pdf");
+document.getElementById("msg").innerHTML=
+"Registered Successfully<br><br>"+
+"<a href='qr.html?id="+docRef.id+"'>Generate QR Code</a>";
 
 }
 
