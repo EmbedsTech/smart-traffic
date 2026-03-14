@@ -62,8 +62,6 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
-/* full width rows */
-
 .full{
 grid-column:span 2;
 }
@@ -90,20 +88,20 @@ margin-top:15px;
 font-weight:bold;
 }
 
-/* QR area */
+/* QR box */
 
-#qrcode{
+#qrbox{
 grid-column:span 2;
 text-align:center;
 margin-top:20px;
 background:white;
-padding:15px;
-display:inline-block;
+padding:20px;
+border-radius:6px;
 }
 
 #downloadBtn{
+margin-top:15px;
 display:none;
-margin-top:10px;
 }
 
 </style>
@@ -118,8 +116,6 @@ margin-top:10px;
 
 <form onsubmit="event.preventDefault(); registerVehicle();">
 
-<!-- Owner / Vehicle -->
-
 <div>
 <label>Owner Name</label>
 <input type="text" id="name">
@@ -129,8 +125,6 @@ margin-top:10px;
 <label>Vehicle Number</label>
 <input type="text" id="vehicle">
 </div>
-
-<!-- License -->
 
 <div>
 <label>License Number</label>
@@ -147,8 +141,6 @@ margin-top:10px;
 <input type="file" id="license_img">
 </div>
 
-<!-- PUC -->
-
 <div>
 <label>PUC Number</label>
 <input type="text" id="puc">
@@ -163,8 +155,6 @@ margin-top:10px;
 <label>PUC Image</label>
 <input type="file" id="puc_img">
 </div>
-
-<!-- Insurance -->
 
 <div>
 <label>Insurance Number</label>
@@ -185,9 +175,10 @@ margin-top:10px;
 
 <p id="msg"></p>
 
+<div id="qrbox">
 <div id="qrcode"></div>
-
 <button id="downloadBtn" onclick="downloadQR()">Download QR</button>
+</div>
 
 </form>
 
@@ -197,8 +188,6 @@ margin-top:10px;
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* Firebase */
 
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
@@ -212,8 +201,6 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* Register */
-
 window.registerVehicle = async function(){
 
 let name=document.getElementById("name").value.trim();
@@ -224,10 +211,6 @@ let puc=document.getElementById("puc").value.trim();
 let puc_expiry=document.getElementById("puc_expiry").value;
 let insurance=document.getElementById("insurance").value.trim();
 let insurance_expiry=document.getElementById("insurance_expiry").value;
-
-let license_img=document.getElementById("license_img").files[0];
-let puc_img=document.getElementById("puc_img").files[0];
-let insurance_img=document.getElementById("insurance_img").files[0];
 
 if(!name || !vehicle || !license || !license_expiry || !puc || !puc_expiry || !insurance || !insurance_expiry){
 
@@ -245,10 +228,7 @@ license_expiry,
 puc,
 puc_expiry,
 insurance,
-insurance_expiry,
-license_image: license_img ? license_img.name : "",
-puc_image: puc_img ? puc_img.name : "",
-insurance_image: insurance_img ? insurance_img.name : ""
+insurance_expiry
 
 });
 
@@ -263,21 +243,18 @@ text:"https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id,
 width:220,
 height:220,
 colorDark:"#000000",
-colorLight:"#ffffff",
-correctLevel:QRCode.CorrectLevel.H
+colorLight:"#ffffff"
 });
 
-document.getElementById("downloadBtn").style.display="block";
+document.getElementById("downloadBtn").style.display="inline-block";
 
 }
 
-/* QR Download (mobile compatible) */
+/* QR download */
 
 window.downloadQR=function(){
 
 let canvas=document.querySelector("#qrcode canvas");
-
-if(canvas){
 
 let image=canvas.toDataURL("image/png");
 
@@ -286,17 +263,7 @@ let link=document.createElement("a");
 link.href=image;
 link.download="vehicle_qr.png";
 
-document.body.appendChild(link);
-
 link.click();
-
-document.body.removeChild(link);
-
-}else{
-
-alert("QR not generated yet");
-
-}
 
 }
 
