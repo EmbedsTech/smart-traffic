@@ -12,7 +12,6 @@ font-family:Arial;
 text-align:center;
 background:#f4f6f8;
 margin:0;
-padding:0;
 }
 
 h1{
@@ -62,18 +61,20 @@ border-radius:5px;
 font-weight:bold;
 }
 
-/* final result */
+/* FINAL RESULT RECTANGLE */
 
 #final_status{
 margin-top:40px;
-font-size:50px;
+font-size:45px;
 font-weight:bold;
-padding:15px;
-width:350px;
+padding:20px;
+width:500px;   /* rectangle width */
 margin-left:auto;
 margin-right:auto;
-border-radius:10px;
+border-radius:6px; /* small curve */
 }
+
+/* colors */
 
 .final_valid{
 background:#28a745;
@@ -163,8 +164,6 @@ fetch("https://traffic-api-pjz9.onrender.com/result")
 
 .then(data=>{
 
-console.log(data);
-
 /* Data */
 
 document.getElementById("owner").innerHTML=data.name || "-";
@@ -189,13 +188,13 @@ let ins_valid=new Date(data.insurance_expiry)>=today;
 
 /* Individual status */
 
-document.getElementById("puc_status").innerHTML=
+document.getElementById("puc_status").innerHTML =
 puc_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID</span>";
 
-document.getElementById("lic_status").innerHTML=
+document.getElementById("lic_status").innerHTML =
 lic_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID</span>";
 
-document.getElementById("ins_status").innerHTML=
+document.getElementById("ins_status").innerHTML =
 ins_valid ? "<span class='valid'>VALID</span>" : "<span class='invalid'>INVALID</span>";
 
 /* Final Status */
