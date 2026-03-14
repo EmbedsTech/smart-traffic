@@ -62,7 +62,7 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
-/* image rows full width */
+/* full width rows */
 
 .full{
 grid-column:span 2;
@@ -90,14 +90,20 @@ margin-top:15px;
 font-weight:bold;
 }
 
+/* QR area */
+
 #qrcode{
 grid-column:span 2;
 text-align:center;
 margin-top:20px;
+background:white;
+padding:15px;
+display:inline-block;
 }
 
 #downloadBtn{
 display:none;
+margin-top:10px;
 }
 
 </style>
@@ -192,6 +198,8 @@ display:none;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* Firebase */
+
 const firebaseConfig = {
 apiKey: "AIzaSyCeZTuuAKhj-yhs3bIAHHPvOX-bmQN8XjE",
 authDomain: "smart-traffic-30f86.firebaseapp.com",
@@ -203,6 +211,8 @@ appId: "1:16532299128:web:f71dd3d315d6c57f15fc8d"
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+/* Register */
 
 window.registerVehicle = async function(){
 
@@ -244,21 +254,24 @@ insurance_image: insurance_img ? insurance_img.name : ""
 
 document.getElementById("msg").innerHTML="Registered Successfully";
 
-/* Generate QR */
+/* QR Generate */
 
 document.getElementById("qrcode").innerHTML="";
 
 new QRCode(document.getElementById("qrcode"),{
 text:"https://traffic-api-pjz9.onrender.com/verify?id="+docRef.id,
-width:200,
-height:200
+width:220,
+height:220,
+colorDark:"#000000",
+colorLight:"#ffffff",
+correctLevel:QRCode.CorrectLevel.H
 });
 
 document.getElementById("downloadBtn").style.display="block";
 
 }
 
-/* MOBILE + LAPTOP QR DOWNLOAD */
+/* QR Download (mobile compatible) */
 
 window.downloadQR=function(){
 
@@ -281,7 +294,7 @@ document.body.removeChild(link);
 
 }else{
 
-alert("QR not generated");
+alert("QR not generated yet");
 
 }
 
